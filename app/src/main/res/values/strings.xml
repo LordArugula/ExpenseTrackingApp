@@ -1,3 +1,40 @@
 <resources>
     <string name="app_name">Expense-Tracking-App</string>
+    <string name="expenses_list_label">Expenses</string>
+    <string name="add_expense">Add Expense</string>
+    <string name="EXTRA_EXPENSE_NAME">EXPENSE_NAME</string>
+    <string name="EXTRA_EXPENSE_DATE">EXPENSE_DATE</string>
+    <string name="EXTRA_EXPENSE_CATEGORY">EXPENSE_CATEGORY</string>
+    <string name="EXTRA_EXPENSE_COST">EXPENSE_COST</string>
+    <string name="EXTRA_EXPENSE_REASON">EXPENSE_REASON</string>
+    <string name="EXTRA_EXPENSE_NOTES">EXPENSE_NOTES</string>
+    <string name="EXTRA_EXPENSE_ID">EXPENSE_ID</string>
+    <string name="expense_name">Expense Name</string>
+    <string name="expense_date">Date</string>
+    <string name="expense_cost">Amount</string>
+    <string name="expense_category">Category</string>
+    <string name="expense_notes">Notes</string>
+    <string name="expense_reason">Reason</string>
+    <string name="save_expense">Save</string>
+    <string name="cancel_expense">Cancel</string>
+    <string name="date_format_mmddyyyy">MM/dd/yyyy</string>
+    <string name="expense_category_default">None</string>
+    <string-array name="expense_categories">
+        <item>Automotive</item>
+        <item><![CDATA[Bills & utilities]]></item>
+        <item>Education</item>
+        <item>Entertainment</item>
+        <item><![CDATA[Fees & adjustments]]></item>
+        <item><![CDATA[Food & drink]]></item>
+        <item>Gas</item>
+        <item><![CDATA[Gifts & donations]]></item>
+        <item>Groceries</item>
+        <item><![CDATA[Health & wellness]]></item>
+        <item>Home</item>
+        <item>Miscellaneous</item>
+        <item>Personal</item>
+        <item>Professional Services</item>
+        <item>Shopping</item>
+        <item>Travel</item>
+    </string-array>
 </resources>
