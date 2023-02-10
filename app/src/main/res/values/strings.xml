@@ -19,10 +19,12 @@
     <string name="save_expense">Save</string>
     <string name="cancel_expense">Cancel</string>
     <string name="date_format_mmddyyyy">MM/dd/yyyy</string>
-    <string name="expense_category_default">None</string>
     <string name="expense_cost_symbol">$</string>
     <string name="delete_expense">Delete</string>
+    <string name="expense_category_default">None</string>
+    <string name="EXTRA_EXPENSE_CUSTOM_CATEGORIES">CUSTOM_CATEGORIES</string>
     <string-array name="expense_categories">
+        <item>None</item>
         <item>Automotive</item>
         <item><![CDATA[Bills & utilities]]></item>
         <item>Education</item>

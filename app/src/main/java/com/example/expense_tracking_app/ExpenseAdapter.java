@@ -29,6 +29,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView name;
+        private final TextView category;
         private final TextView date;
         private final TextView cost;
 
@@ -36,12 +37,17 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ViewHold
             super(itemView);
 
             name = itemView.findViewById(R.id.expense_name);
+            category = itemView.findViewById(R.id.expense_category);
             date = itemView.findViewById(R.id.expense_date);
             cost = itemView.findViewById(R.id.expense_cost);
         }
 
         public void setName(String name) {
             this.name.setText(name);
+        }
+
+        public void setCategory(String category) {
+            this.category.setText(category);
         }
 
         public void setDate(Date date) {
@@ -66,6 +72,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Expense expense = items.get(position);
         holder.setName(expense.getName());
+        holder.setCategory(expense.getCategory());
         holder.setDate(expense.getDate());
         holder.setCost(expense.getCost());
         holder.itemView.setOnClickListener(view -> this.onItemClickListener.onItemClick(expense, position));

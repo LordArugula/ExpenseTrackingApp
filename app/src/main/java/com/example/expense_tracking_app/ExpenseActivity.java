@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -15,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.List;
 
 public class ExpenseActivity extends AppCompatActivity {
     public static final int EXPENSE_ERROR_ID = -2;
@@ -26,13 +29,15 @@ public class ExpenseActivity extends AppCompatActivity {
     private TextView dateText;
     private EditText costText;
     private TextView costSymbolText;
-    private EditText categoryText;
+    private AutoCompleteTextView categoryText;
     private EditText reasonText;
     private EditText notesText;
 
     private int id;
 
     private DatePickerDialog datePickerDialog;
+
+    private ExpenseCategories expenseCategories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +64,18 @@ public class ExpenseActivity extends AppCompatActivity {
         populateForm(intent);
 
         initializeDatePicker();
+        initializeCategories(intent);
+    }
+
+    private void initializeCategories(Intent intent) {
+        String[] expenseCategoriesArray = getResources().getStringArray(R.array.expense_categories);
+        expenseCategories = new ExpenseCategories(expenseCategoriesArray, getString(R.string.expense_category_default));
+
+        List<String> customCategories = intent.getStringArrayListExtra(getString(R.string.EXTRA_EXPENSE_CUSTOM_CATEGORIES));
+        expenseCategories.addCategories(customCategories);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, expenseCategories.getCategories());
+        categoryText.setAdapter(adapter);
     }
 
     private void initializeDatePicker() {
@@ -69,14 +86,13 @@ public class ExpenseActivity extends AppCompatActivity {
             calendar.set(year, month, day);
             dateText.setText(DateFormat.format("MM/dd/yyyy", calendar));
         });
-        
+
         dateText.setOnClickListener(view -> datePickerDialog.show());
         dateText.setOnFocusChangeListener((view, hasFocus) -> {
             if (hasFocus) {
                 datePickerDialog.show();
             }
         });
-
     }
 
     private void populateForm(Intent intent) {
@@ -110,6 +126,7 @@ public class ExpenseActivity extends AppCompatActivity {
         if (nameText.getText() != null) {
             intent.putExtra(getString(R.string.EXTRA_EXPENSE_NAME), nameText.getText().toString());
         }
+
         if (dateText.getText() != null) {
             intent.putExtra(getString(R.string.EXTRA_EXPENSE_DATE), dateText.getText().toString());
         }
@@ -129,6 +146,7 @@ public class ExpenseActivity extends AppCompatActivity {
 
         if (categoryText.getText() != null) {
             intent.putExtra(getString(R.string.EXTRA_EXPENSE_CATEGORY), categoryText.getText().toString());
+            expenseCategories.addCategory(categoryText.getText().toString());
         }
 
         if (reasonText.getText() != null) {
@@ -140,6 +158,8 @@ public class ExpenseActivity extends AppCompatActivity {
         }
 
         intent.putExtra(getString(R.string.EXTRA_EXPENSE_ID), id);
+
+        intent.putStringArrayListExtra(getString(R.string.EXTRA_EXPENSE_CUSTOM_CATEGORIES), expenseCategories.getCustomCategories());
 
         setResult(RESULT_OK, intent);
         finish();

@@ -90,6 +90,9 @@ public class MainActivity extends AppCompatActivity {
         String reason = data.getStringExtra(getString(R.string.EXTRA_EXPENSE_REASON));
         String notes = data.getStringExtra(getString(R.string.EXTRA_EXPENSE_NOTES));
 
+        ArrayList<String> customCategories = data.getStringArrayListExtra(getString(R.string.EXTRA_EXPENSE_CUSTOM_CATEGORIES));
+        expenseCategories.addCategories(customCategories);
+
         Date date = new Date();
         try {
             android.icu.text.DateFormat dateFormat = SimpleDateFormat.getDateInstance(android.icu.text.DateFormat.SHORT);
@@ -143,6 +146,9 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(getString(R.string.EXTRA_EXPENSE_REASON), expense.getReason());
         intent.putExtra(getString(R.string.EXTRA_EXPENSE_NOTES), expense.getNotes());
         intent.putExtra(getString(R.string.EXTRA_EXPENSE_ID), id);
+
+        intent.putStringArrayListExtra(getString(R.string.EXTRA_EXPENSE_CUSTOM_CATEGORIES), expenseCategories.getCustomCategories());
+
         activityResultLauncher.launch(intent);
     }
 
