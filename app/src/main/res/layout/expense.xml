@@ -15,20 +15,18 @@
         android:minWidth="120dp"
         android:orientation="vertical">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/expense_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:ellipsize="marquee"
-            android:singleLine="true"
-            android:text="Test" />
+            android:singleLine="true" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/expense_category"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Category" />
+            android:layout_height="wrap_content" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -40,20 +38,18 @@
         android:minWidth="120dp"
         android:orientation="vertical">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/expense_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
-            android:singleLine="true"
-            android:text="Date" />
+            android:singleLine="true" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/expense_cost"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:text="Cost" />
+            android:singleLine="true" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

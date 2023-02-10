@@ -68,12 +68,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-        assert result.getData() != null;
         switch (result.getResultCode()) {
             case RESULT_OK:
+                assert result.getData() != null;
                 insertOrUpdateExpense(result.getData());
                 break;
             case RESULT_CANCELED:
+                assert result.getData() != null;
                 removeExpense(result.getData());
                 break;
         }

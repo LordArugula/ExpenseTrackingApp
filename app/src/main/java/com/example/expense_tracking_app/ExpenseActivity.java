@@ -136,8 +136,7 @@ public class ExpenseActivity extends AppCompatActivity {
             NumberFormat format = NumberFormat.getCurrencyInstance();
             try {
                 String costString = costSymbolText.getText().toString() + costText.getText().toString();
-                //noinspection ConstantConditions
-                cost = (long) format.parse(costString);
+                cost = format.parse(costString).doubleValue();
             } catch (ParseException | NullPointerException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
