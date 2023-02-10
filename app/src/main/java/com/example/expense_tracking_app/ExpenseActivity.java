@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -13,8 +14,10 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 
 public class ExpenseActivity extends AppCompatActivity {
+    public static final int EXPENSE_ERROR_ID = -2;
+    public static final int EXPENSE_NEW = -1;
+
     private static final String TAG = ExpenseActivity.class.getSimpleName();
-    private static final int NEW_EXPENSE = -1;
 
     private EditText nameText;
     private EditText dateText;
@@ -39,9 +42,17 @@ public class ExpenseActivity extends AppCompatActivity {
         reasonText = findViewById(R.id.expense_reason);
         notesText = findViewById(R.id.expense_notes);
 
+        Button deleteButton = findViewById(R.id.delete_expense);
+
         Intent intent = getIntent();
 
-        id = intent.getIntExtra(getString(R.string.EXTRA_EXPENSE_ID), NEW_EXPENSE);
+        id = intent.getIntExtra(getString(R.string.EXTRA_EXPENSE_ID), EXPENSE_ERROR_ID);
+        assert id != EXPENSE_ERROR_ID;
+
+        if (id == EXPENSE_NEW) {
+            deleteButton.setVisibility(View.INVISIBLE);
+        }
+
         String name = intent.getStringExtra(getString(R.string.EXTRA_EXPENSE_NAME));
         String date = intent.getStringExtra(getString(R.string.EXTRA_EXPENSE_DATE));
         double cost = intent.getDoubleExtra(getString(R.string.EXTRA_EXPENSE_COST), 0);
@@ -81,6 +92,7 @@ public class ExpenseActivity extends AppCompatActivity {
             NumberFormat format = NumberFormat.getCurrencyInstance();
             try {
                 String costString = costSymbolText.getText().toString() + costText.getText().toString();
+                //noinspection ConstantConditions
                 cost = (long) format.parse(costString);
             } catch (ParseException | NullPointerException e) {
                 Log.e(TAG, e.getMessage(), e);
@@ -103,6 +115,15 @@ public class ExpenseActivity extends AppCompatActivity {
         intent.putExtra(getString(R.string.EXTRA_EXPENSE_ID), id);
 
         setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    public void delete(View view) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(getString(R.string.EXTRA_EXPENSE_DELETE), true);
+        intent.putExtra(getString(R.string.EXTRA_EXPENSE_ID), id);
+
+        setResult(RESULT_CANCELED, intent);
         finish();
     }
 }

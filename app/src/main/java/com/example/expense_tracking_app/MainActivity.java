@@ -50,20 +50,38 @@ public class MainActivity extends AppCompatActivity {
 
     private ExpenseCategories expenseCategories;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        expenses = new ArrayList<>();
+
+        String[] expenseCategoriesArray = getResources().getStringArray(R.array.expense_categories);
+        expenseCategories = new ExpenseCategories(expenseCategoriesArray, getString(R.string.expense_category_default));
+
+        RecyclerView recyclerView = findViewById(R.id.expenses_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        expenseAdapter = new ExpenseAdapter(expenses, this::onItemClick);
+        recyclerView.setAdapter(expenseAdapter);
+    }
+
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        assert result.getData() != null;
         switch (result.getResultCode()) {
             case RESULT_OK:
                 insertOrUpdateExpense(result.getData());
                 break;
             case RESULT_CANCELED:
-                // todo
+                removeExpense(result.getData());
                 break;
         }
     });
 
     private void insertOrUpdateExpense(Intent data) {
-
-        int id = data.getIntExtra(getString(R.string.EXTRA_EXPENSE_ID), -1);
+        int id = data.getIntExtra(getString(R.string.EXTRA_EXPENSE_ID), ExpenseActivity.EXPENSE_ERROR_ID);
+        assert id != ExpenseActivity.EXPENSE_ERROR_ID;
 
         String name = data.getStringExtra(getString(R.string.EXTRA_EXPENSE_NAME));
         String dateString = data.getStringExtra(getString(R.string.EXTRA_EXPENSE_DATE));
@@ -84,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         expense.setReason(reason);
         expense.setNotes(notes);
 
-        if (id == -1) {
+        if (id == ExpenseActivity.EXPENSE_NEW) {
             id = expenses.size();
             expenses.add(expense);
             expenseAdapter.notifyItemInserted(id);
@@ -94,26 +112,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    private void removeExpense(Intent data) {
+        boolean delete = data.getBooleanExtra(getString(R.string.EXTRA_EXPENSE_DELETE), false);
 
-        expenses = new ArrayList<>();
+        if (delete) {
+            int id = data.getIntExtra(getString(R.string.EXTRA_EXPENSE_ID), ExpenseActivity.EXPENSE_ERROR_ID);
+            assert id != ExpenseActivity.EXPENSE_ERROR_ID;
 
-        String[] expenseCategoriesArray = getResources().getStringArray(R.array.expense_categories);
-        expenseCategories = new ExpenseCategories(expenseCategoriesArray, getString(R.string.expense_category_default));
-
-        RecyclerView recyclerView = findViewById(R.id.expenses_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        expenseAdapter = new ExpenseAdapter(expenses, this::onItemClick);
-        recyclerView.setAdapter(expenseAdapter);
+            expenses.remove(id);
+            expenseAdapter.notifyItemRemoved(id);
+        }
     }
 
     public void onAddExpenseCallback(View view) {
         Expense expense = new Expense("", new Date(System.currentTimeMillis()), 0, expenseCategories.getDefault());
-        launchExpenseActivity(expense, -1);
+        launchExpenseActivity(expense, ExpenseActivity.EXPENSE_NEW);
     }
 
     private void onItemClick(Expense expense, int position) {
