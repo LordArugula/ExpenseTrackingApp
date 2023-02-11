@@ -1,22 +1,22 @@
 package com.example.expense_tracking_app;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Expense {
     private String name;
-    private Date date;
+    private LocalDate date;
     private double cost;
     private String reason;
     private String notes;
     private String category;
 
-    public Expense(String name, Date date, double cost) {
+    public Expense(String name, LocalDate date, double cost) {
         this.name = name;
         this.date = date;
         this.cost = cost;
     }
 
-    public Expense(String name, Date date, double cost, String category) {
+    public Expense(String name, LocalDate date, double cost, String category) {
         this(name, date, cost);
         this.category = category;
     }
@@ -29,11 +29,11 @@ public class Expense {
         this.name = name;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

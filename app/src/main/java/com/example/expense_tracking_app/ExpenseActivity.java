@@ -3,7 +3,6 @@ package com.example.expense_tracking_app;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -16,7 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ExpenseActivity extends AppCompatActivity {
@@ -82,9 +82,8 @@ public class ExpenseActivity extends AppCompatActivity {
         datePickerDialog = new DatePickerDialog(this);
 
         datePickerDialog.setOnDateSetListener((datePicker, year, month, day) -> {
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(year, month, day);
-            dateText.setText(DateFormat.format("MM/dd/yyyy", calendar));
+            LocalDate date = LocalDate.of(year, month + 1, day);
+            dateText.setText(date.format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
         });
 
         dateText.setOnClickListener(view -> datePickerDialog.show());
@@ -97,14 +96,14 @@ public class ExpenseActivity extends AppCompatActivity {
 
     private void populateForm(Intent intent) {
         String name = intent.getStringExtra(getString(R.string.EXTRA_EXPENSE_NAME));
-        String date = intent.getStringExtra(getString(R.string.EXTRA_EXPENSE_DATE));
+        long date = intent.getLongExtra(getString(R.string.EXTRA_EXPENSE_DATE), 0);
         double cost = intent.getDoubleExtra(getString(R.string.EXTRA_EXPENSE_COST), 0);
         String category = intent.getStringExtra(getString(R.string.EXTRA_EXPENSE_CATEGORY));
         String reason = intent.getStringExtra(getString(R.string.EXTRA_EXPENSE_REASON));
         String notes = intent.getStringExtra(getString(R.string.EXTRA_EXPENSE_NOTES));
 
         nameText.setText(name);
-        dateText.setText(date);
+        dateText.setText(LocalDate.ofEpochDay(date).format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
         NumberFormat format = NumberFormat.getCurrencyInstance();
         String costString = format.format(cost);
         costText.setText(costString.substring(1));
@@ -128,7 +127,8 @@ public class ExpenseActivity extends AppCompatActivity {
         }
 
         if (dateText.getText() != null) {
-            intent.putExtra(getString(R.string.EXTRA_EXPENSE_DATE), dateText.getText().toString());
+            LocalDate date = LocalDate.parse(dateText.getText().toString(), DateTimeFormatter.ofPattern(getString(R.string.date_format_mmddyyyy)));
+            intent.putExtra(getString(R.string.EXTRA_EXPENSE_DATE), date.toEpochDay());
         }
 
         if (costText.getText() != null && costSymbolText.getText() != null) {

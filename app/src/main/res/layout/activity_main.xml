@@ -7,24 +7,109 @@
     android:padding="8dp"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/expenses_list_label"
-        style="@style/TextAppearance.AppCompat.Medium"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="@string/expenses_list_label"
-        android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/expenses_list"
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/expenses_list_label"
-        tools:listitem="@layout/expense" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/header_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/expenses_header"
+                android:textSize="32sp" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/expense_filters"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="4dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="4dp"
+                    android:text="@string/expense_filters"
+                    android:textSize="18sp" />
+
+                <View
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginHorizontal="4dp"
+                    android:background="@drawable/baseline_filter_alt_24"
+                    android:backgroundTint="#696969" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/expense_total"
+                    android:textSize="18sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/expense_total"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="120dp"
+                    android:textSize="18sp" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/expense_average"
+                    android:textSize="18sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/expense_average"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="120dp"
+                    android:textSize="18sp" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/expenses_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            tools:listitem="@layout/expense" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"

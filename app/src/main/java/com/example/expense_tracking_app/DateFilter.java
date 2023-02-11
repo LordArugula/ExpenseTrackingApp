@@ -1,0 +1,55 @@
+package com.example.expense_tracking_app;
+
+import java.time.LocalDate;
+
+interface ExpenseFilter {
+    boolean isEnabled();
+
+    void setEnabled(boolean enabled);
+
+    boolean filter(Expense expense);
+}
+
+public class DateFilter implements ExpenseFilter {
+    private LocalDate start;
+    private LocalDate end;
+    private boolean enabled;
+
+    public DateFilter() {
+        enabled = false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    @Override
+    public boolean filter(Expense expense) {
+        if (!enabled) {
+            return true;
+        }
+
+        LocalDate date = expense.getDate();
+        return !date.isBefore(start) && !date.isAfter(end);
+    }
+
+    public LocalDate getStartDate() {
+        return start;
+    }
+
+    public LocalDate getEndDate() {
+        return end;
+    }
+
+    public void setDateRange(LocalDate start, LocalDate end) {
+        this.start = start;
+        this.end = end;
+        setEnabled(true);
+    }
+}

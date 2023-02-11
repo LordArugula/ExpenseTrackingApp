@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Expense-Tracking-App</string>
-    <string name="expenses_list_label">Expenses</string>
+    <string name="expenses_header">Expenses</string>
     <string name="add_expense">Add Expense</string>
     <string name="EXTRA_EXPENSE_NAME">EXPENSE_NAME</string>
     <string name="EXTRA_EXPENSE_DATE">EXPENSE_DATE</string>
@@ -23,6 +23,29 @@
     <string name="delete_expense">Delete</string>
     <string name="expense_category_default">None</string>
     <string name="EXTRA_EXPENSE_CUSTOM_CATEGORIES">CUSTOM_CATEGORIES</string>
+    <string name="expense_filters">Filters</string>
+    <string name="expense_total">Total:</string>
+    <string name="expense_average">Average:</string>
+    <string name="filters_header">Filters</string>
+    <string name="filter_date">Date</string>
+    <string name="filter_category">Category</string>
+    <string name="cancel_filter">Cancel</string>
+    <string name="clear_filter">Clear</string>
+    <string name="save_filter">Save</string>
+    <string name="filter_date_today">Today</string>
+    <string name="filter_date_yesterday">Yesterday</string>
+    <string name="filter_date_specific_day">Specific Day</string>
+    <string name="filter_date_this_week">This Week</string>
+    <string name="filter_date_last_week">Last Week</string>
+    <string name="filter_date_this_month">This Month</string>
+    <string name="filter_date_last_month">Last Month</string>
+    <string name="filter_date_custom_range">Custom Range</string>
+    <string name="EXTRA_FILTER_BY_DATE">FILTER_BY_DATE</string>
+    <string name="EXTRA_FILTER_BY_CATEGORY">FILTER_BY_CATEGORY</string>
+    <string name="EXTRA_FILTER_DATE_START">FILTER_DATE_START</string>
+    <string name="EXTRA_FILTER_DATE_END">FILTER_DATE_END</string>
+    <string name="EXTRA_FILTER_CATEGORY">FILTER_CATEGORY</string>
+    <string name="filter_category_all">All</string>
     <string-array name="expense_categories">
         <item>None</item>
         <item>Automotive</item>
