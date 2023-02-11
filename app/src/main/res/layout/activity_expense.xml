@@ -19,7 +19,7 @@
             android:id="@+id/expense_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textAutoComplete" />
+            android:inputType="text" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

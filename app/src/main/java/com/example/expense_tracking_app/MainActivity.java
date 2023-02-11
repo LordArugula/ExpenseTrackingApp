@@ -18,11 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = MainActivity.class.getSimpleName();
-
     private ExpenseAdapter expenseAdapter;
-
-    private View expenseFilters;
 
     private TextView totalText;
     private TextView averageText;
@@ -50,8 +46,6 @@ public class MainActivity extends AppCompatActivity {
      *  later in the class.
      */
 
-    private List<Expense> expenses;
-
     private ExpenseCategories expenseCategories;
     private CategoryFilter categoryFilter;
     private DateFilter dateFilter;
@@ -65,38 +59,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        expenses = new ArrayList<>();
+        List<Expense> expenses = new ArrayList<>();
 
         String[] expenseCategoriesArray = getResources().getStringArray(R.array.expense_categories);
         expenseCategories = new ExpenseCategories(expenseCategoriesArray, getString(R.string.expense_category_default));
 
-        expenseFilters = findViewById(R.id.expense_filters);
+        View expenseFilters = findViewById(R.id.expense_filters);
 
-        expenseFilters.setOnClickListener(view -> {
-            launchFilterActivity();
-//            View dialogView = getLayoutInflater().inflate(R.layout.expense_filter_dialog, null);
-//            new MaterialAlertDialogBuilder(this)
-//                    .setTitle(R.string.expense_filters)
-//                    .setView(dialogView)
-//                    .setPositiveButton("Save", (dialogInterface, i) -> {
-//
-//                        dialogView.findViewById(R.id.expense_)
-//                        categoryFilter.setCategory("None");
-//                        expenseAdapter.updateFilters();
-//                        updateSummary();
-//                    })
-//                    .setNegativeButton("Cancel", (dialogInterface, i) -> {
-//                        // do nothing on cancel
-//                    })
-//                    .setNeutralButton("Clear", (dialogInterface, i) -> {
-//                        categoryFilter.setEnabled(false);
-//                        dateFilter.setEnabled(false);
-//                        expenseAdapter.updateFilters();
-//                        updateSummary();
-//                    })
-//                    .create()
-//                    .show();
-        });
+        expenseFilters.setOnClickListener(view -> launchFilterActivity());
 
         RecyclerView recyclerView = findViewById(R.id.expenses_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -188,15 +158,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateSummary() {
-        double total = expenses.stream().mapToDouble(Expense::getCost).sum();
+        double total = expenseAdapter.getViewItemsCost();
         NumberFormat format = NumberFormat.getCurrencyInstance();
         totalText.setText(format.format(total));
 
         double average;
-        if (expenses.size() == 0) {
+        if (expenseAdapter.getItemCount() == 0) {
             average = 0;
         } else {
-            average = total / expenses.size();
+            average = total / expenseAdapter.getItemCount();
         }
         averageText.setText(format.format(average));
     }
@@ -225,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
             Intent data = result.getData();
             assert data != null;
 
-            boolean filterByDate = data.getBooleanExtra(getString(R.string.EXTRA_FILTER_DATE_START), false);
+            boolean filterByDate = data.getBooleanExtra(getString(R.string.EXTRA_FILTER_BY_DATE), false);
             boolean filterByCategory = data.getBooleanExtra(getString(R.string.EXTRA_FILTER_BY_CATEGORY), false);
 
             if (filterByDate) {
@@ -238,15 +208,17 @@ public class MainActivity extends AppCompatActivity {
 
             if (filterByCategory) {
                 String category = data.getStringExtra(getString(R.string.EXTRA_FILTER_CATEGORY));
-                categoryFilter.setCategory(category);
+                if (category.contentEquals(getString(R.string.filter_category_all))) {
+                    categoryFilter.setEnabled(false);
+                } else {
+                    categoryFilter.setCategory(category);
+                }
             } else {
                 categoryFilter.setEnabled(false);
             }
 
-            if (filterByDate || filterByCategory) {
-                expenseAdapter.updateFilters();
-                updateSummary();
-            }
+            expenseAdapter.updateFilters();
+            updateSummary();
         }
     }
 }

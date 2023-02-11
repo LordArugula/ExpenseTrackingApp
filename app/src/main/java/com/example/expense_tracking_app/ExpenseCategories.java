@@ -8,8 +8,8 @@ import java.util.TreeSet;
 
 public class ExpenseCategories {
 
-    private Set<String> defaultCategories;
-    private Set<String> customCategories;
+    private final Set<String> defaultCategories;
+    private final Set<String> customCategories;
     private String _default;
 
     public ExpenseCategories(String[] expenseCategories, String _default) {

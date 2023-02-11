@@ -1,6 +1,6 @@
 package com.example.expense_tracking_app;
 
-import android.text.format.DateFormat;
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +39,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ViewHold
         rebuildViewItems();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void rebuildViewItems() {
         viewItems.clear();
         viewItemsToBackingItems.clear();
@@ -96,6 +97,10 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ViewHold
         rebuildViewItems();
     }
 
+    public double getViewItemsCost() {
+        return viewItems.stream().mapToDouble(Expense::getCost).sum();
+    }
+
     public interface onItemClickListener {
         void onItemClick(Expense expense, int position);
     }
@@ -148,9 +153,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ViewHold
         holder.setCategory(expense.getCategory());
         holder.setDate(expense.getDate());
         holder.setCost(expense.getCost());
-        holder.itemView.setOnClickListener(view -> {
-            this.onItemClickListener.onItemClick(expense, viewItemsToBackingItems.get(expense));
-        });
+        holder.itemView.setOnClickListener(view -> this.onItemClickListener.onItemClick(expense, viewItemsToBackingItems.get(expense)));
     }
 
     @Override

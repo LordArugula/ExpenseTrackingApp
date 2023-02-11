@@ -27,8 +27,8 @@
     <string name="expense_total">Total:</string>
     <string name="expense_average">Average:</string>
     <string name="filters_header">Filters</string>
-    <string name="filter_date">Date</string>
-    <string name="filter_category">Category</string>
+    <string name="filter_date_header">Date</string>
+    <string name="filter_category_header">Category</string>
     <string name="cancel_filter">Cancel</string>
     <string name="clear_filter">Clear</string>
     <string name="save_filter">Save</string>

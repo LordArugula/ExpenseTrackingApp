@@ -2,14 +2,6 @@ package com.example.expense_tracking_app;
 
 import java.time.LocalDate;
 
-interface ExpenseFilter {
-    boolean isEnabled();
-
-    void setEnabled(boolean enabled);
-
-    boolean filter(Expense expense);
-}
-
 public class DateFilter implements ExpenseFilter {
     private LocalDate start;
     private LocalDate end;
