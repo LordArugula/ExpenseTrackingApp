@@ -67,3 +67,11 @@ After adding the new entry
 The user can also tap on an existing expense to view, edit, and delete an expense entry. 
 
 <img src="https://user-images.githubusercontent.com/41593388/218353580-a3a104e5-759c-401d-86b7-966da912c5d1.png" width="240" />
+
+Using the predefined categories:
+
+<img src="https://user-images.githubusercontent.com/41593388/218354419-2a620611-26bf-4aca-942d-9e188a1ae9d4.png" width="240" />
+
+The user can also use one of the predefined categories or create a custom category by entering a new name.
+
+<img src="https://user-images.githubusercontent.com/41593388/218354308-e5ba5bb7-8e5c-4c61-86dd-a53de2e9d149.png" width="240" />
