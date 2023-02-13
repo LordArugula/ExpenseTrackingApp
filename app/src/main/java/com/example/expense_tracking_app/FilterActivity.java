@@ -12,9 +12,8 @@ import androidx.core.util.Pair;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
 
-import java.time.Instant;
+import java.time.Duration;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.TemporalField;
@@ -140,7 +139,7 @@ public class FilterActivity extends AppCompatActivity {
             datePicker = MaterialDatePicker.Builder.datePicker()
                     .build();
             datePicker.addOnPositiveButtonClickListener(dateEpoch -> {
-                LocalDate date = Instant.ofEpochMilli(dateEpoch).atZone(ZoneId.systemDefault()).toLocalDate();
+                LocalDate date = LocalDate.ofEpochDay(Duration.ofMillis(dateEpoch).toDays());
                 start = date;
                 end = date;
                 setDateText();
@@ -189,8 +188,8 @@ public class FilterActivity extends AppCompatActivity {
             dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
                     .build();
             dateRangePicker.addOnPositiveButtonClickListener(dateRange -> {
-                start = Instant.ofEpochMilli(dateRange.first).atZone(ZoneId.systemDefault()).toLocalDate();
-                end = Instant.ofEpochMilli(dateRange.second).atZone(ZoneId.systemDefault()).toLocalDate();
+                start = LocalDate.ofEpochDay(Duration.ofMillis(dateRange.first).toDays());
+                end = LocalDate.ofEpochDay(Duration.ofMillis(dateRange.second).toDays());
                 setDateText();
             });
         }

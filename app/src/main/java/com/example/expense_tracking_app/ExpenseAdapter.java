@@ -77,7 +77,8 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ViewHold
         Expense previous = backingItems.get(position);
 
         backingItems.set(position, expense);
-        if (matchesFilter(expense) || viewItemsToBackingItems.containsKey(previous)) {
+
+        if (matchesFilter(previous) || matchesFilter(expense) || viewItemsToBackingItems.containsKey(previous)) {
             rebuildViewItems();
         }
     }
