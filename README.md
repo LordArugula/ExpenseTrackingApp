@@ -1,7 +1,19 @@
 # CS453-ExpenseTrackingApp
-CS 453 Assignment 2 - Activities and Intents
 
-# Requirements
+# CS 453 Assignment 3 - Activity Lifecycle and States
+## Part Two 
+
+For part one of Assignment 3, see: https://github.com/LordArugula/Implicit-Intents and 
+
+Requirements:
+
+> Design the user interface for an app of your choice that uses an Adapter and a RecyclerView, ListView, GridView or another View component of your choice. Some app ideas might be a simple restaurant ordering app. You may use the same app from assignment 2 if you wish and just add an Adapter for a View Component. You can design the features, UI and controls in your own creative way. It can be simple or complex depending on your design. You might think of creating a better Uber Eats, Grubhub, or Doordash app.
+
+This app already used the RecyclerView and RecyclerView.Adapter to display expense entries, so no changes were required.
+
+# CS 453 Assignment 2 - Activities and Intents
+
+## Requirements
 
 The user needs to be able to enter and track their expenses by day, month and year.
 
