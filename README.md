@@ -3,7 +3,7 @@
 # CS 453 Assignment 3 - Activity Lifecycle and States
 ## Part Two 
 
-For part one of Assignment 3, see: https://github.com/LordArugula/Implicit-Intents and 
+For part one of Assignment 3, see: https://github.com/LordArugula/CS453-Two-Activities/tree/lifecycle and https://github.com/LordArugula/Implicit-Intents
 
 Requirements:
 
