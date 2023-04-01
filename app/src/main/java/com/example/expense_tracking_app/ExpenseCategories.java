@@ -12,17 +12,17 @@ public class ExpenseCategories {
 
     public ExpenseCategories(List<String> defaultCategories, List<String> customCategories, String defaultCategory) {
         this.defaultCategories = new TreeSet<>(defaultCategories);
-        this.customCategories = new TreeSet<>(customCategories  );
+        this.customCategories = new TreeSet<>(customCategories);
 
         this.defaultCategory = defaultCategory;
     }
 
-    public void addCategory(String name) {
+    public boolean addCategory(String name) {
         if (defaultCategories.contains(name) || customCategories.contains(name)) {
-            return;
+            return false;
         }
 
-        customCategories.add(name);
+        return customCategories.add(name);
     }
 
     public void removeCategory(String name) {

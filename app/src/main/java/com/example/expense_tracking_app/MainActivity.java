@@ -173,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     insertOrUpdateExpense(intent);
                     writeExpensesToSharedPrefs();
+                    writeCategoriesToSharedPrefs();
                 }
                 break;
             case RESULT_CANCELED:
@@ -249,6 +250,7 @@ public class MainActivity extends AppCompatActivity {
 
             // add to backing list
             backingExpenses.add(expense);
+            expenseCategories.addCategory(expense.getCategory());
 
             // add to view list
             if (matchesFilters(expense)) {
@@ -278,6 +280,7 @@ public class MainActivity extends AppCompatActivity {
 
         // add to backing list
         backingExpenses.add(expense);
+        expenseCategories.addCategory(expense.getCategory());
 
         // add to view list
         if (matchesFilters(expense)) {
@@ -297,14 +300,6 @@ public class MainActivity extends AppCompatActivity {
 
             updateSummary();
         }
-    }
-
-    private void writeExpensesToSharedPrefs() {
-        // write expense to shared prefs
-        SharedPreferences.Editor editor = preferences.edit();
-        String expensesJson = JsonUtils.expensesToJson(backingExpenses);
-        editor.putString(EXPENSES, expensesJson);
-        editor.apply();
     }
 
     /**
@@ -395,6 +390,20 @@ public class MainActivity extends AppCompatActivity {
         launchExpenseActivity(expense, ExpenseActivity.EXPENSE_NEW);
     }
 
+    private void writeExpensesToSharedPrefs() {
+        SharedPreferences.Editor editor = preferences.edit();
+        String expensesJson = JsonUtils.expensesToJson(backingExpenses);
+        editor.putString(EXPENSES, expensesJson);
+        editor.apply();
+    }
+
+    private void writeCategoriesToSharedPrefs() {
+        SharedPreferences.Editor editor = preferences.edit();
+        String customCategoriesJson = JsonUtils.categoriesToJson(expenseCategories.getCustomCategories());
+        editor.putString(EXPENSES, customCategoriesJson);
+        editor.apply();
+    }
+
     private boolean matchesFilters(Expense expense) {
         return dateFilter.matches(expense) && categoryFilter.matches(expense);
     }
@@ -417,9 +426,11 @@ public class MainActivity extends AppCompatActivity {
         if (index == ExpenseActivity.EXPENSE_NEW) {
             addExpense(expense);
             writeExpensesToSharedPrefs();
+            writeCategoriesToSharedPrefs();
         } else {
             updateExpense(index, expense);
             writeExpensesToSharedPrefs();
+            writeCategoriesToSharedPrefs();
         }
     }
 
