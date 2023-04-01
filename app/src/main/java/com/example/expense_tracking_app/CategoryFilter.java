@@ -4,8 +4,8 @@ public class CategoryFilter implements ExpenseFilter {
     private String category;
     private boolean enabled;
 
-    public CategoryFilter() {
-        enabled = false;
+    public CategoryFilter(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
@@ -19,7 +19,7 @@ public class CategoryFilter implements ExpenseFilter {
     }
 
     @Override
-    public boolean filter(Expense expense) {
+    public boolean matches(Expense expense) {
         if (!enabled) {
             return true;
         }

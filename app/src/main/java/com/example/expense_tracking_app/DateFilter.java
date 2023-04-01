@@ -7,8 +7,8 @@ public class DateFilter implements ExpenseFilter {
     private LocalDate end;
     private boolean enabled;
 
-    public DateFilter() {
-        enabled = false;
+    public DateFilter(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
@@ -22,7 +22,7 @@ public class DateFilter implements ExpenseFilter {
     }
 
     @Override
-    public boolean filter(Expense expense) {
+    public boolean matches(Expense expense) {
         if (!enabled) {
             return true;
         }

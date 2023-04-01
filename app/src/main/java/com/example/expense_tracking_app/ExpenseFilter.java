@@ -5,5 +5,5 @@ public interface ExpenseFilter {
 
     void setEnabled(boolean enabled);
 
-    boolean filter(Expense expense);
+    boolean matches(Expense expense);
 }

@@ -58,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
 
     private ExpenseAdapter expenseAdapter;
 
+    private DateFilter dateFilter;
+    private CategoryFilter categoryFilter;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,17 +77,19 @@ public class MainActivity extends AppCompatActivity {
 
         preferences = getSharedPreferences(SHARED_PREF_FILE, MODE_PRIVATE);
 
+        initializeFilters();
         initializeExpenseCategories();
         initializeExpenses();
         initializeExpenseRecyclerView();
 
-        addRandomExpenses(15);
+//        addRandomExpenses(15);
     }
 
     private void addRandomExpenses(int count) {
         java.util.Random random = new java.util.Random(0);
         String[] names = new String[]{
-                "Stuff", "Things", "Hello", "Foo", "Bar", "Java", "Android", "Cringe", "World", "Money", "Stinky", "Poopoo Peepee"
+                "Stuff", "Things", "Hello", "Foo", "Bar", "Java", "Android",
+                "Cringe", "World", "Money", "Stinky", "Blue", "Red", "Green", "Yellow"
         };
 
         List<String> categories = expenseCategories.getCategories();
@@ -96,14 +101,18 @@ public class MainActivity extends AppCompatActivity {
             Expense expense = new Expense(name, date, cost, categories.get(random.nextInt(categories.size())));
             addExpense(expense);
         }
+        writeExpensesToSharedPrefs();
+    }
+
+    private void initializeFilters() {
+        this.dateFilter = new DateFilter(false);
+        this.categoryFilter = new CategoryFilter(false);
     }
 
     /**
      * Initializes the expenses list RecyclerView.
      */
     private void initializeExpenseRecyclerView() {
-        expenseAdapter = new ExpenseAdapter(viewExpenses, this::launchExpenseActivity);
-
         RecyclerView recyclerView = findViewById(R.id.expenses_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(expenseAdapter);
@@ -116,12 +125,14 @@ public class MainActivity extends AppCompatActivity {
         backingExpenses = new ArrayList<>();
         viewExpenses = new ArrayList<>();
         viewItemsToBackingItems = new HashMap<>();
+        expenseAdapter = new ExpenseAdapter(viewExpenses, this::launchExpenseActivity);
 
         // load expenses from preferences
         String expensesJson = preferences.getString(EXPENSES, null);
         if (expensesJson != null) {
             List<Expense> expenses = JsonUtils.expensesFromJson(expensesJson);
             addExpenses(expenses);
+            writeExpensesToSharedPrefs();
         }
     }
 
@@ -158,8 +169,10 @@ public class MainActivity extends AppCompatActivity {
                 if (shouldDelete) {
                     int index = intent.getIntExtra(getString(R.string.EXTRA_EXPENSE_INDEX), ExpenseActivity.EXPENSE_ERROR);
                     removeExpense(index);
+                    writeExpensesToSharedPrefs();
                 } else {
                     insertOrUpdateExpense(intent);
+                    writeExpensesToSharedPrefs();
                 }
                 break;
             case RESULT_CANCELED:
@@ -169,52 +182,62 @@ public class MainActivity extends AppCompatActivity {
 
     private void launchFilterActivity() {
         Intent intent = new Intent(this, FilterActivity.class);
-//
-//        intent.putExtra(getString(R.string.EXTRA_FILTER_BY_DATE), dateFilter.isEnabled());
-//        if (dateFilter.isEnabled()) {
-//            intent.putExtra(getString(R.string.EXTRA_FILTER_DATE_START), dateFilter.getStartDate().toEpochDay());
-//            intent.putExtra(getString(R.string.EXTRA_FILTER_DATE_END), dateFilter.getEndDate().toEpochDay());
-//        }
-//
-//        intent.putExtra(getString(R.string.EXTRA_FILTER_BY_CATEGORY), categoryFilter.isEnabled());
-//        if (categoryFilter.isEnabled()) {
-//            intent.putExtra(getString(R.string.EXTRA_FILTER_CATEGORY), categoryFilter.getCategory());
-//        }
-//
-//        intent.putStringArrayListExtra(getString(R.string.EXTRA_EXPENSE_CUSTOM_CATEGORIES), expenseCategories.getCustomCategories());
+
+        intent.putExtra(getString(R.string.EXTRA_FILTER_BY_DATE), dateFilter.isEnabled());
+        if (dateFilter.isEnabled()) {
+            intent.putExtra(getString(R.string.EXTRA_FILTER_DATE_START), dateFilter.getStartDate().toEpochDay());
+            intent.putExtra(getString(R.string.EXTRA_FILTER_DATE_END), dateFilter.getEndDate().toEpochDay());
+        }
+
+        intent.putExtra(getString(R.string.EXTRA_FILTER_BY_CATEGORY), categoryFilter.isEnabled());
+        if (categoryFilter.isEnabled()) {
+            intent.putExtra(getString(R.string.EXTRA_FILTER_CATEGORY), categoryFilter.getCategory());
+        }
+
+        intent.putStringArrayListExtra(getString(R.string.EXTRA_EXPENSE_CUSTOM_CATEGORIES), expenseCategories.getCustomCategories());
 
         filterActivityResultLauncher.launch(intent);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void onFilterActivityResult(ActivityResult result) {
         if (result.getResultCode() == RESULT_OK) {
-            Intent data = result.getData();
-            assert data != null;
-//
-//            boolean filterByDate = data.getBooleanExtra(getString(R.string.EXTRA_FILTER_BY_DATE), false);
-//            boolean filterByCategory = data.getBooleanExtra(getString(R.string.EXTRA_FILTER_BY_CATEGORY), false);
-//
-//            if (filterByDate) {
-//                long dateStart = data.getLongExtra(getString(R.string.EXTRA_FILTER_DATE_START), 0);
-//                long dateEnd = data.getLongExtra(getString(R.string.EXTRA_FILTER_DATE_END), 0);
-//                dateFilter.setDateRange(LocalDate.ofEpochDay(dateStart), LocalDate.ofEpochDay(dateEnd));
-//            } else {
-//                dateFilter.setEnabled(false);
-//            }
-//
-//            if (filterByCategory) {
-//                String category = data.getStringExtra(getString(R.string.EXTRA_FILTER_CATEGORY));
-//                if (category.contentEquals(getString(R.string.filter_category_all))) {
-//                    categoryFilter.setEnabled(false);
-//                } else {
-//                    categoryFilter.setCategory(category);
-//                }
-//            } else {
-//                categoryFilter.setEnabled(false);
-//            }
-//
-//            expenseAdapter.updateFilters();
-//            updateSummary();
+            Intent intent = result.getData();
+            assert intent != null;
+
+            boolean filterByDate = intent.getBooleanExtra(getString(R.string.EXTRA_FILTER_BY_DATE), false);
+            boolean filterByCategory = intent.getBooleanExtra(getString(R.string.EXTRA_FILTER_BY_CATEGORY), false);
+
+            if (filterByDate) {
+                long dateStart = intent.getLongExtra(getString(R.string.EXTRA_FILTER_DATE_START), 0);
+                long dateEnd = intent.getLongExtra(getString(R.string.EXTRA_FILTER_DATE_END), 0);
+                dateFilter.setDateRange(LocalDate.ofEpochDay(dateStart), LocalDate.ofEpochDay(dateEnd));
+            } else {
+                dateFilter.setEnabled(false);
+            }
+
+            if (filterByCategory) {
+                String category = intent.getStringExtra(getString(R.string.EXTRA_FILTER_CATEGORY));
+                if (category.contentEquals(getString(R.string.filter_category_all))) {
+                    categoryFilter.setEnabled(false);
+                } else {
+                    categoryFilter.setCategory(category);
+                }
+            } else {
+                categoryFilter.setEnabled(false);
+            }
+
+            viewExpenses.clear();
+            for (int i = 0; i < backingExpenses.size(); i++) {
+                Expense expense = backingExpenses.get(i);
+                if (matchesFilters(expense)) {
+                    viewExpenses.add(expense);
+                }
+            }
+
+            viewExpenses.sort(Expense::compareTo);
+            expenseAdapter.notifyDataSetChanged();
+            updateSummary();
         }
     }
 
@@ -245,6 +268,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Adds an expense.
+     *
+     * @param expense The expense.
+     */
     private void addExpense(Expense expense) {
         int index = backingExpenses.size();
 
@@ -271,6 +299,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void writeExpensesToSharedPrefs() {
+        // write expense to shared prefs
+        SharedPreferences.Editor editor = preferences.edit();
+        String expensesJson = JsonUtils.expensesToJson(backingExpenses);
+        editor.putString(EXPENSES, expensesJson);
+        editor.apply();
+    }
+
+    /**
+     * Removes an expense at the given index.
+     *
+     * @param index the index of the expense to remove.
+     */
     private void removeExpense(int index) {
         // remove from view items
         Expense removedExpense = viewExpenses.remove(index);
@@ -300,15 +341,14 @@ public class MainActivity extends AppCompatActivity {
     private void updateExpense(int index, Expense expense) {
         Expense oldExpense = viewExpenses.get(index);
 
+        // the expense no longer matches the filter and should not be viewed
         if (!matchesFilters(expense)) {
-            // the expense no longer matches the filter and should not be viewed
             // remove it from the view items
             viewExpenses.remove(oldExpense);
             // update backing items
             backingExpenses.set(index, expense);
 
             expenseAdapter.notifyItemRemoved(index);
-            updateSummary();
         } else {
             // update view items
             viewExpenses.set(index, expense);
@@ -330,8 +370,9 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 }
             }
-            updateSummary();
         }
+
+        updateSummary();
     }
 
     /**
@@ -355,7 +396,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean matchesFilters(Expense expense) {
-        return true;
+        return dateFilter.matches(expense) && categoryFilter.matches(expense);
     }
 
     private void insertOrUpdateExpense(Intent data) {
@@ -369,15 +410,16 @@ public class MainActivity extends AppCompatActivity {
         String reason = data.getStringExtra(getString(R.string.EXTRA_EXPENSE_REASON));
         String notes = data.getStringExtra(getString(R.string.EXTRA_EXPENSE_NOTES));
 
-        expenseCategories.addCategory(category);
         Expense expense = new Expense(name, LocalDate.ofEpochDay(dateLong), cost, category);
         expense.setReason(reason);
         expense.setNotes(notes);
 
         if (index == ExpenseActivity.EXPENSE_NEW) {
             addExpense(expense);
+            writeExpensesToSharedPrefs();
         } else {
             updateExpense(index, expense);
+            writeExpensesToSharedPrefs();
         }
     }
 
