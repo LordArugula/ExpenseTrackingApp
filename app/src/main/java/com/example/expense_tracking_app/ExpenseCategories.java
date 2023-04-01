@@ -1,21 +1,20 @@
 package com.example.expense_tracking_app;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 public class ExpenseCategories {
-
     private final Set<String> defaultCategories;
     private final Set<String> customCategories;
-    private String _default;
+    private String defaultCategory;
 
-    public ExpenseCategories(String[] expenseCategories, String _default) {
-        defaultCategories = new TreeSet<>(Arrays.asList(expenseCategories));
-        customCategories = new TreeSet<>();
-        this._default = _default;
+    public ExpenseCategories(List<String> defaultCategories, List<String> customCategories, String defaultCategory) {
+        this.defaultCategories = new TreeSet<>(defaultCategories);
+        this.customCategories = new TreeSet<>(customCategories  );
+
+        this.defaultCategory = defaultCategory;
     }
 
     public void addCategory(String name) {
@@ -30,17 +29,12 @@ public class ExpenseCategories {
         customCategories.remove(name);
     }
 
-    public void renameCategory(String oldName, String newName) {
-        customCategories.remove(oldName);
-        customCategories.add(newName);
-    }
-
-    public String getDefault() {
-        return _default;
+    public String getDefaultCategory() {
+        return defaultCategory;
     }
 
     public void setDefault(String aDefault) {
-        this._default = aDefault;
+        this.defaultCategory = aDefault;
     }
 
     public List<String> getCategories() {
@@ -56,5 +50,9 @@ public class ExpenseCategories {
 
     public ArrayList<String> getCustomCategories() {
         return new ArrayList<>(customCategories);
+    }
+
+    public boolean isCustomCategory(String category) {
+        return customCategories.contains(category);
     }
 }

@@ -16,7 +16,7 @@
         android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/expense_name"
+            android:id="@+id/expense_name_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
@@ -24,7 +24,7 @@
             android:singleLine="true" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/expense_category"
+            android:id="@+id/expense_category_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -39,14 +39,14 @@
         android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/expense_date"
+            android:id="@+id/expense_date_edittext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:singleLine="true" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/expense_cost"
+            android:id="@+id/expense_cost_edittext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true" />

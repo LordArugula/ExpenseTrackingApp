@@ -26,7 +26,7 @@
                 android:textSize="32sp" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/expense_filters"
+                android:id="@+id/expense_filters_button"
                 style="@style/Widget.AppCompat.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
                     android:textSize="18sp" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/expense_total"
+                    android:id="@+id/expense_total_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:minWidth="120dp"
@@ -91,7 +91,7 @@
                     android:textSize="18sp" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/expense_average"
+                    android:id="@+id/expense_average_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:minWidth="120dp"
@@ -112,11 +112,11 @@
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_expense_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
         android:contentDescription="@string/add_expense"
-        android:onClick="onAddExpenseCallback"
         android:src="@android:drawable/ic_input_add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

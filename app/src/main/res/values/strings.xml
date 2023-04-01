@@ -8,8 +8,7 @@
     <string name="EXTRA_EXPENSE_COST">EXPENSE_COST</string>
     <string name="EXTRA_EXPENSE_REASON">EXPENSE_REASON</string>
     <string name="EXTRA_EXPENSE_NOTES">EXPENSE_NOTES</string>
-    <string name="EXTRA_EXPENSE_ID">EXPENSE_ID</string>
-    <string name="EXTRA_EXPENSE_DELETE">EXPENSE_DELETE</string>
+    <string name="EXTRA_EXPENSE_INDEX">EXPENSE_INDEX</string>
     <string name="expense_name">Expense Name</string>
     <string name="expense_date">Date</string>
     <string name="expense_cost">Amount</string>
@@ -46,6 +45,7 @@
     <string name="EXTRA_FILTER_DATE_END">FILTER_DATE_END</string>
     <string name="EXTRA_FILTER_CATEGORY">FILTER_CATEGORY</string>
     <string name="filter_category_all">All</string>
+    <string name="EXTRA_EXPENSE_DELETE">EXPENSE_DELETE</string>
     <string-array name="expense_categories">
         <item>None</item>
         <item>Automotive</item>

@@ -2,7 +2,7 @@ package com.example.expense_tracking_app;
 
 import java.time.LocalDate;
 
-public class Expense {
+public class Expense implements Comparable<Expense> {
     private String name;
     private LocalDate date;
     private double cost;
@@ -67,5 +67,14 @@ public class Expense {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    @Override
+    public int compareTo(Expense expense) {
+        int comparison = date.compareTo(expense.getDate());
+        if (comparison == 0) {
+            return name.compareToIgnoreCase(expense.getName());
+        }
+        return comparison;
     }
 }
