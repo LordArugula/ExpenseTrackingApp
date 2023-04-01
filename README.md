@@ -1,6 +1,23 @@
 # CS453-ExpenseTrackingApp
 
+# CS 453 Assignment 4 - Saving Data with Shared Preferences
+
+For part one of Assignment 4, see: https://github.com/LordArugula/SharedPreferences
+
+## Part Two
+
+### Requirements
+
+Add Shared Preferences to your assignment two, Expense Tracking App. 
+
+### Submission
+
+The Expense Tracking app now saves expenses to the shared prefs. 
+
+<img src="https://user-images.githubusercontent.com/41593388/229270129-025443ef-33ac-4f1c-b0c9-30ad1082487b.png" width="320" />
+
 # CS 453 Assignment 3 - Activity Lifecycle and States
+
 ## Part Two 
 
 For part one of Assignment 3, see: https://github.com/LordArugula/CS453-Two-Activities/tree/lifecycle and https://github.com/LordArugula/Implicit-Intents
