@@ -101,7 +101,10 @@ public class MainActivity extends AppCompatActivity {
             Expense expense = new Expense(name, date, cost, categories.get(random.nextInt(categories.size())));
             addExpense(expense);
         }
-        writeExpensesToSharedPrefs();
+
+        SharedPreferences.Editor editor = preferences.edit();
+        writeExpensesToSharedPrefs(editor);
+        editor.apply();
     }
 
     private void initializeFilters() {
@@ -132,7 +135,9 @@ public class MainActivity extends AppCompatActivity {
         if (expensesJson != null) {
             List<Expense> expenses = JsonUtils.expensesFromJson(expensesJson);
             addExpenses(expenses);
-            writeExpensesToSharedPrefs();
+            SharedPreferences.Editor editor = preferences.edit();
+            writeExpensesToSharedPrefs(editor);
+            editor.apply();
         }
     }
 
@@ -169,11 +174,17 @@ public class MainActivity extends AppCompatActivity {
                 if (shouldDelete) {
                     int index = intent.getIntExtra(getString(R.string.EXTRA_EXPENSE_INDEX), ExpenseActivity.EXPENSE_ERROR);
                     removeExpense(index);
-                    writeExpensesToSharedPrefs();
+
+                    SharedPreferences.Editor editor = preferences.edit();
+                    writeExpensesToSharedPrefs(editor);
+                    editor.apply();
                 } else {
                     insertOrUpdateExpense(intent);
-                    writeExpensesToSharedPrefs();
-                    writeCategoriesToSharedPrefs();
+
+                    SharedPreferences.Editor editor = preferences.edit();
+                    writeExpensesToSharedPrefs(editor);
+                    writeCategoriesToSharedPrefs(editor);
+                    editor.apply();
                 }
                 break;
             case RESULT_CANCELED:
@@ -390,19 +401,18 @@ public class MainActivity extends AppCompatActivity {
         launchExpenseActivity(expense, ExpenseActivity.EXPENSE_NEW);
     }
 
-    private void writeExpensesToSharedPrefs() {
-        SharedPreferences.Editor editor = preferences.edit();
+    private void writeExpensesToSharedPrefs(SharedPreferences.Editor editor) {
+//        SharedPreferences.Editor editor = preferences.edit();
         String expensesJson = JsonUtils.expensesToJson(backingExpenses);
         editor.putString(EXPENSES, expensesJson);
-        editor.apply();
+//        editor.apply();
     }
 
-    private void writeCategoriesToSharedPrefs() {
-        SharedPreferences.Editor editor = preferences.edit();
+    private void writeCategoriesToSharedPrefs(SharedPreferences.Editor editor) {
+//        SharedPreferences.Editor editor = preferences.edit();
         String customCategoriesJson = JsonUtils.categoriesToJson(expenseCategories.getCustomCategories());
-        editor.putString(EXPENSES, customCategoriesJson);
-        editor.apply();
         editor.putString(CUSTOM_CATEGORIES, customCategoriesJson);
+//        editor.apply();
     }
 
     private boolean matchesFilters(Expense expense) {
@@ -426,12 +436,16 @@ public class MainActivity extends AppCompatActivity {
 
         if (index == ExpenseActivity.EXPENSE_NEW) {
             addExpense(expense);
-            writeExpensesToSharedPrefs();
-            writeCategoriesToSharedPrefs();
+            SharedPreferences.Editor editor = preferences.edit();
+            writeExpensesToSharedPrefs(editor);
+            writeCategoriesToSharedPrefs(editor);
+            editor.apply();
         } else {
             updateExpense(index, expense);
-            writeExpensesToSharedPrefs();
-            writeCategoriesToSharedPrefs();
+            SharedPreferences.Editor editor = preferences.edit();
+            writeExpensesToSharedPrefs(editor);
+            writeCategoriesToSharedPrefs(editor);
+            editor.apply();
         }
     }
 
