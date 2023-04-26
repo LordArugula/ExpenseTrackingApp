@@ -402,6 +402,7 @@ public class MainActivity extends AppCompatActivity {
         String customCategoriesJson = JsonUtils.categoriesToJson(expenseCategories.getCustomCategories());
         editor.putString(EXPENSES, customCategoriesJson);
         editor.apply();
+        editor.putString(CUSTOM_CATEGORIES, customCategoriesJson);
     }
 
     private boolean matchesFilters(Expense expense) {
