@@ -1,14 +1,10 @@
 <resources>
     <string name="app_name">Expense-Tracking-App</string>
     <string name="expenses_header">Expenses</string>
+    <string name="expense_filters">Filters</string>
+    <string name="expense_total">Total:</string>
+    <string name="expense_average">Average:</string>
     <string name="add_expense">Add Expense</string>
-    <string name="EXTRA_EXPENSE_NAME">EXPENSE_NAME</string>
-    <string name="EXTRA_EXPENSE_DATE">EXPENSE_DATE</string>
-    <string name="EXTRA_EXPENSE_CATEGORY">EXPENSE_CATEGORY</string>
-    <string name="EXTRA_EXPENSE_COST">EXPENSE_COST</string>
-    <string name="EXTRA_EXPENSE_REASON">EXPENSE_REASON</string>
-    <string name="EXTRA_EXPENSE_NOTES">EXPENSE_NOTES</string>
-    <string name="EXTRA_EXPENSE_INDEX">EXPENSE_INDEX</string>
     <string name="expense_name">Expense Name</string>
     <string name="expense_date">Date</string>
     <string name="expense_cost">Amount</string>
@@ -17,37 +13,23 @@
     <string name="expense_reason">Reason</string>
     <string name="save_expense">Save</string>
     <string name="cancel_expense">Cancel</string>
-    <string name="date_format_mmddyyyy">MM/dd/yyyy</string>
-    <string name="expense_cost_symbol">$</string>
     <string name="delete_expense">Delete</string>
-    <string name="expense_category_default">None</string>
-    <string name="EXTRA_EXPENSE_CUSTOM_CATEGORIES">CUSTOM_CATEGORIES</string>
-    <string name="expense_filters">Filters</string>
-    <string name="expense_total">Total:</string>
-    <string name="expense_average">Average:</string>
     <string name="filters_header">Filters</string>
-    <string name="filter_date_header">Date</string>
-    <string name="filter_category_header">Category</string>
+    <string name="dates">Dates</string>
+    <string name="date_from">From</string>
+    <string name="date_to">To</string>
+    <string name="categories">Categories</string>
     <string name="cancel_filter">Cancel</string>
     <string name="clear_filter">Clear</string>
     <string name="save_filter">Save</string>
-    <string name="filter_date_today">Today</string>
-    <string name="filter_date_yesterday">Yesterday</string>
-    <string name="filter_date_specific_day">Specific Day</string>
-    <string name="filter_date_this_week">This Week</string>
-    <string name="filter_date_last_week">Last Week</string>
-    <string name="filter_date_this_month">This Month</string>
-    <string name="filter_date_last_month">Last Month</string>
-    <string name="filter_date_custom_range">Custom Range</string>
-    <string name="EXTRA_FILTER_BY_DATE">FILTER_BY_DATE</string>
-    <string name="EXTRA_FILTER_BY_CATEGORY">FILTER_BY_CATEGORY</string>
-    <string name="EXTRA_FILTER_DATE_START">FILTER_DATE_START</string>
-    <string name="EXTRA_FILTER_DATE_END">FILTER_DATE_END</string>
-    <string name="EXTRA_FILTER_CATEGORY">FILTER_CATEGORY</string>
-    <string name="filter_category_all">All</string>
-    <string name="EXTRA_EXPENSE_DELETE">EXPENSE_DELETE</string>
+    <string name="expense_category_default">Uncategorized</string>
+    <string name="EXTRA_FILTER_FROM_DATE">EXTRA_FILTER_FROM_DATE</string>
+    <string name="EXTRA_FILTER_TO_DATE">EXTRA_FILTER_TO_DATE</string>
+    <string name="EXTRA_FILTER_CATEGORIES">EXTRA_FILTER_CATEGORIES</string>
+    <string name="date_picker_dialog_positive">OK</string>
+    <string name="date_picker_dialog_negative">Cancel</string>
+    <string name="date_picker_dialog_neutral">Clear</string>
     <string-array name="expense_categories">
-        <item>None</item>
         <item>Automotive</item>
         <item><![CDATA[Bills & utilities]]></item>
         <item>Education</item>
@@ -60,6 +42,7 @@
         <item><![CDATA[Health & wellness]]></item>
         <item>Home</item>
         <item>Miscellaneous</item>
+        <item>Uncategorized</item>
         <item>Personal</item>
         <item>Professional Services</item>
         <item>Shopping</item>
