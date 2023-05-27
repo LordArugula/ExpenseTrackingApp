@@ -2,111 +2,112 @@ package com.example.expense_tracking_app;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.DatePicker;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.expense_tracking_app.databinding.ActivityExpenseBinding;
+import com.example.expense_tracking_app.models.Expense;
+import com.example.expense_tracking_app.services.ExpenseCategoryRepository;
+import com.example.expense_tracking_app.services.ExpenseRepository;
+
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class ExpenseActivity extends AppCompatActivity {
-    /**
-     * The id used for new expense entries.
-     */
-    public static final int EXPENSE_NEW = -1;
-    /**
-     * The id used for an error.
-     */
-    public static final int EXPENSE_ERROR = -2;
+    public static final String EXTRA_EXPENSE = "EXTRA_EXPENSE";
 
-    private static final String TAG = ExpenseActivity.class.getSimpleName();
+    public static final String EXTRA_EDIT_OPTION = "EXPENSE_EDIT";
+    public static final int EDIT_OPTION_NEW = 0;
+    public static final int EDIT_OPTION_EXISTING = 1;
 
-    private EditText nameText;
-    private TextView dateText;
-    private EditText costText;
-    private TextView costSymbolText;
-    private AutoCompleteTextView categoryText;
-    private EditText reasonText;
-    private EditText notesText;
-    private int expenseIndex;
+    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
 
-    private ExpenseCategories expenseCategories;
+    @Inject
+    public ExpenseRepository expenseRepository;
+
+    @Inject
+    public ExpenseCategoryRepository expenseCategoryRepository;
+
+    private ActivityExpenseBinding binding;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_expense);
-
-        nameText = findViewById(R.id.expense_name_edittext);
-
-        dateText = findViewById(R.id.expense_date_edittext);
-        initializeDatePicker();
-
-        costText = findViewById(R.id.expense_cost_edittext);
-        costSymbolText = findViewById(R.id.expense_cost_symbol);
-        categoryText = findViewById(R.id.expense_category_edittext);
-        reasonText = findViewById(R.id.expense_reason_edittext);
-        notesText = findViewById(R.id.expense_notes_edittext);
+        binding = ActivityExpenseBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
 
         Intent intent = getIntent();
-        expenseIndex = intent.getIntExtra(getString(R.string.EXTRA_EXPENSE_INDEX), -2);
-        assert expenseIndex != EXPENSE_ERROR;
+        int editOption = intent.getIntExtra(EXTRA_EDIT_OPTION, EDIT_OPTION_NEW);
 
-        populateFieldsFromIntent(intent);
+        switch (editOption) {
+            case EDIT_OPTION_EXISTING:
+                Expense expense = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                        ? intent.getParcelableExtra(EXTRA_EXPENSE, Expense.class)
+                        : intent.getParcelableExtra(EXTRA_EXPENSE);
 
-        SharedPreferences preferences = getSharedPreferences(MainActivity.SHARED_PREF_FILE, MODE_PRIVATE);
-        expenseCategories = new ExpenseCategoriesBuilder()
-                .withDefaultCategoriesFromResources(getResources())
-                .withCategoriesFromSharedPrefs(preferences, MainActivity.CUSTOM_CATEGORIES)
-                .build();
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, expenseCategories.getCategories());
-        categoryText.setAdapter(adapter);
-
-        Button deleteButton = findViewById(R.id.delete_expense_button);
-        if (expenseIndex == EXPENSE_NEW) {
-            deleteButton.setVisibility(View.INVISIBLE);
+                populateFormFrom(expense);
+                break;
+            case EDIT_OPTION_NEW:
+            default:
+                populateFormWithDefault();
+                break;
         }
-        deleteButton.setOnClickListener(view -> deleteExpense());
-
-        Button cancelButton = findViewById(R.id.cancel_expense_button);
-        cancelButton.setOnClickListener(view -> cancelChanges());
-
-        Button saveButton = findViewById(R.id.save_expense_button);
-        saveButton.setOnClickListener(view -> saveChanges());
     }
 
-    /**
-     * Populates the activity's fields from data passed from the intent.
-     */
-    private void populateFieldsFromIntent(Intent intent) {
-        String name = intent.getStringExtra(getString(R.string.EXTRA_EXPENSE_NAME));
-        long date = intent.getLongExtra(getString(R.string.EXTRA_EXPENSE_DATE), 0);
-        double cost = intent.getDoubleExtra(getString(R.string.EXTRA_EXPENSE_COST), 0);
-        String category = intent.getStringExtra(getString(R.string.EXTRA_EXPENSE_CATEGORY));
-        String reason = intent.getStringExtra(getString(R.string.EXTRA_EXPENSE_REASON));
-        String notes = intent.getStringExtra(getString(R.string.EXTRA_EXPENSE_NOTES));
+    private void populateFormWithDefault() {
+        binding.name.requestFocus();
 
-        nameText.setText(name);
-        dateText.setText(LocalDate.ofEpochDay(date).format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
-        NumberFormat format = NumberFormat.getCurrencyInstance();
-        String costString = format.format(cost);
-        costText.setText(costString.substring(1));
-        costSymbolText.setText(costString.substring(0, 1));
-        categoryText.setText(category);
-        reasonText.setText(reason);
-        notesText.setText(notes);
+        binding.date.setText(LocalDate.now().format(dateFormat));
+        initializeDatePicker();
+
+        binding.category.setText(R.string.expense_category_default);
+        binding.category.setSimpleItems(expenseCategoryRepository.getAll());
+
+        initializeButtons(null);
+    }
+
+    private void populateFormFrom(Expense expense) {
+        binding.name.setText(expense.getName());
+
+        binding.date.setText(expense.getDate().format(dateFormat));
+        initializeDatePicker();
+
+        String currencyString = currencyFormat.format(expense.getCost());
+        binding.currency.setText(currencyString.subSequence(0, 1));
+        binding.cost.setText(currencyString.subSequence(1, currencyString.length()));
+
+        binding.reason.setText(expense.getReason());
+        binding.notes.setText(expense.getNotes());
+
+        binding.category.setText(expense.getCategory());
+        binding.category.setSimpleItems(expenseCategoryRepository.getAll());
+
+        initializeButtons(expense);
+    }
+
+    private void initializeButtons(Expense expense) {
+        if (expense == null) {
+            binding.deleteButton.setVisibility(View.INVISIBLE);
+            binding.cancelButton.setOnClickListener(view -> cancelChanges());
+            binding.saveButton.setOnClickListener(view -> saveChanges(-1));
+        } else {
+            binding.deleteButton.setOnClickListener(view -> deleteExpense(expense.getId()));
+            binding.cancelButton.setOnClickListener(view -> cancelChanges());
+            binding.saveButton.setOnClickListener(view -> saveChanges(expense.getId()));
+        }
     }
 
     /**
@@ -115,28 +116,29 @@ public class ExpenseActivity extends AppCompatActivity {
     private void initializeDatePicker() {
         DatePickerDialog datePickerDialog = new DatePickerDialog(this);
 
-        datePickerDialog.setOnDateSetListener((datePicker, year, month, day) -> {
-            // the DatePicker gives months indexed starting at 0, so offset by one.
-            LocalDate date = LocalDate.of(year, month + 1, day);
-            dateText.setText(date.format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
-        });
+        datePickerDialog.setOnDateSetListener(this::onDateSet);
 
-        dateText.setOnClickListener(view -> datePickerDialog.show());
-        dateText.setOnFocusChangeListener((view, hasFocus) -> {
+        binding.date.setOnClickListener(view -> datePickerDialog.show());
+        binding.date.setOnFocusChangeListener((view, hasFocus) -> {
             if (hasFocus) {
                 datePickerDialog.show();
             }
         });
     }
 
+    private void onDateSet(DatePicker datePicker, int year, int month, int day) {
+        // the DatePicker gives months indexed starting at 0, so offset by one.
+        LocalDate date = LocalDate.of(year, month + 1, day);
+        binding.date.setText(date.format(dateFormat));
+    }
+
     /**
      * Deletes the expenses and returns to the MainActivity.
      */
-    private void deleteExpense() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra(getString(R.string.EXTRA_EXPENSE_DELETE), true);
-        intent.putExtra(getString(R.string.EXTRA_EXPENSE_INDEX), expenseIndex);
+    private void deleteExpense(int id) {
+        expenseRepository.remove(id);
 
+        Intent intent = new Intent(this, MainActivity.class);
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -153,47 +155,39 @@ public class ExpenseActivity extends AppCompatActivity {
     /**
      * Saves any changes to the expense and returns to the MainActivity.
      */
-    private void saveChanges() {
+    private void saveChanges(int id) {
+        String name = binding.name.getText().toString();
+        LocalDate date = LocalDate.parse(binding.date.getText().toString(), dateFormat);
+
+        double cost = 0;
+        if (!binding.cost.getText().toString().isEmpty()) {
+            cost = Double.parseDouble(binding.cost.getText().toString());
+        }
+
+        String category = binding.category.getText().toString();
+        String reason = binding.reason.getText().toString();
+        String notes = binding.notes.getText().toString();
+
+        boolean hasErrors = false;
+        if (name.isEmpty()) {
+            binding.name.setError("Name is required.");
+            hasErrors = true;
+        }
+
+        if (hasErrors) {
+            return;
+        }
+
+        Expense expense = new Expense(name, date, cost, category, reason, notes);
+        if (expenseRepository.contains(id)) {
+            expenseRepository.update(id, expense);
+        } else {
+            expenseRepository.add(expense);
+        }
+
+        expenseCategoryRepository.add(category);
+
         Intent intent = new Intent(this, MainActivity.class);
-
-        if (nameText.getText() != null) {
-            intent.putExtra(getString(R.string.EXTRA_EXPENSE_NAME), nameText.getText().toString());
-        }
-
-        if (dateText.getText() != null) {
-            LocalDate date = LocalDate.parse(dateText.getText().toString(), DateTimeFormatter.ofPattern(getString(R.string.date_format_mmddyyyy)));
-            intent.putExtra(getString(R.string.EXTRA_EXPENSE_DATE), date.toEpochDay());
-        }
-
-        if (costText.getText() != null && costSymbolText.getText() != null) {
-            double cost = 0;
-            NumberFormat format = NumberFormat.getCurrencyInstance();
-            try {
-                String costString = costSymbolText.getText().toString() + costText.getText().toString();
-                cost = format.parse(costString).doubleValue();
-            } catch (ParseException | NullPointerException e) {
-                Log.e(TAG, e.getMessage(), e);
-            }
-            intent.putExtra(getString(R.string.EXTRA_EXPENSE_COST), cost);
-        }
-
-        if (categoryText.getText() != null) {
-            intent.putExtra(getString(R.string.EXTRA_EXPENSE_CATEGORY), categoryText.getText().toString());
-            expenseCategories.addCategory(categoryText.getText().toString());
-        }
-
-        if (reasonText.getText() != null) {
-            intent.putExtra(getString(R.string.EXTRA_EXPENSE_REASON), reasonText.getText().toString());
-        }
-
-        if (notesText.getText() != null) {
-            intent.putExtra(getString(R.string.EXTRA_EXPENSE_NOTES), notesText.getText().toString());
-        }
-
-        intent.putExtra(getString(R.string.EXTRA_EXPENSE_INDEX), expenseIndex);
-
-        intent.putStringArrayListExtra(getString(R.string.EXTRA_EXPENSE_CUSTOM_CATEGORIES), expenseCategories.getCustomCategories());
-
         setResult(RESULT_OK, intent);
         finish();
     }

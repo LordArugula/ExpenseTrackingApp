@@ -16,7 +16,7 @@
         app:endIconMode="clear_text">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/expense_name_edittext"
+            android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text" />
@@ -30,7 +30,7 @@
         android:hint="@string/expense_date">
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/expense_date_edittext"
+            android:id="@+id/date"
             style="@style/Widget.MaterialComponents.TextInputEditText.FilledBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,11 +44,10 @@
         android:orientation="horizontal">
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/expense_cost_symbol"
+            android:id="@+id/currency"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:text="@string/expense_cost_symbol"
             android:textAlignment="textEnd"
             android:textSize="18sp" />
 
@@ -61,10 +60,10 @@
             android:hint="@string/expense_cost">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/expense_cost_edittext"
+                android:id="@+id/cost"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number|numberDecimal"
+                android:inputType="number|numberDecimal|numberSigned"
                 android:textColorHint="#616161" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -79,7 +78,7 @@
         app:endIconMode="dropdown_menu">
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/expense_category_edittext"
+            android:id="@+id/category"
             style="@style/Widget.MaterialComponents.TextInputEditText.FilledBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -95,7 +94,7 @@
         app:endIconMode="clear_text">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/expense_reason_edittext"
+            android:id="@+id/reason"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textLongMessage|textAutoComplete|textMultiLine" />
@@ -110,7 +109,7 @@
         app:endIconMode="clear_text">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/expense_notes_edittext"
+            android:id="@+id/notes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textLongMessage|textAutoComplete|textMultiLine" />
@@ -125,14 +124,14 @@
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/save_expense_button"
+            android:id="@+id/save_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:text="@string/save_expense" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/cancel_expense_button"
+            android:id="@+id/cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cancel_expense" />
@@ -143,7 +142,7 @@
             android:layout_weight="1" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/delete_expense_button"
+            android:id="@+id/delete_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/delete_expense" />
