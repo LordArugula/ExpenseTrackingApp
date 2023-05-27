@@ -1,198 +1,190 @@
 package com.example.expense_tracking_app;
 
+import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.DatePicker;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.util.Pair;
 
-import com.google.android.material.datepicker.MaterialDatePicker;
+import com.example.expense_tracking_app.databinding.ActivityFilterBinding;
+import com.example.expense_tracking_app.services.ExpenseCategoryRepository;
+import com.google.android.material.chip.Chip;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.TemporalField;
-import java.time.temporal.WeekFields;
-import java.util.Locale;
+import java.util.HashSet;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class FilterActivity extends AppCompatActivity {
-    private static final String TAG = FilterActivity.class.getSimpleName();
+    @Inject
+    public ExpenseCategoryRepository _expenseCategoryRepository;
 
-    private LocalDate start;
-    private LocalDate end;
-    private String category;
+    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
-    private MaterialDatePicker<Long> datePicker;
-    private MaterialDatePicker<Pair<Long, Long>> dateRangePicker;
+    private LocalDate fromDate;
+    private LocalDate toDate;
+    private HashSet<String> selectedCategories;
 
-    private TextView dateRangeText;
-    private AutoCompleteTextView categoryText;
+    private ActivityFilterBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_filter);
+        binding = ActivityFilterBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
 
-        Intent intent = getIntent();
+        selectedCategories = new HashSet<>();
 
-        dateRangeText = findViewById(R.id.filter_date_range);
-        boolean filterByDate = intent.getBooleanExtra(getString(R.string.EXTRA_FILTER_BY_DATE), false);
-        if (filterByDate) {
-            long startEpoch = intent.getLongExtra(getString(R.string.EXTRA_FILTER_DATE_START), 0);
-            long endEpoch = intent.getLongExtra(getString(R.string.EXTRA_FILTER_DATE_END), 0);
+        fromDate = LocalDate.MIN;
+        toDate = LocalDate.MAX;
 
-            start = LocalDate.ofEpochDay(startEpoch);
-            end = LocalDate.ofEpochDay(endEpoch);
+        bindDateField(binding.fromDate, this::onSetFromDate);
+        bindDateField(binding.toDate, this::onSetToDate);
 
-            setDateText();
+        String[] categories = _expenseCategoryRepository.getAll();
+        binding.categories.setSimpleItems(categories);
+        binding.categories.setOnItemClickListener(this::onSelectCategory);
+
+        binding.cancelButton.setOnClickListener(this::onClickCancelButton);
+        binding.clearButton.setOnClickListener(this::onClickClearButton);
+        binding.saveButton.setOnClickListener(this::onClickSaveButton);
+    }
+
+    private void onSelectCategory(AdapterView<?> adapterView, View view, int position, long l) {
+        String category = (String) adapterView.getItemAtPosition(position);
+        binding.categories.setText("");
+
+        if (selectedCategories.contains(category)) {
+            return;
         }
 
-        categoryText = findViewById(R.id.filter_category);
-        boolean filterByCategory = intent.getBooleanExtra(getString(R.string.EXTRA_FILTER_BY_CATEGORY), false);
-        if (filterByCategory) {
-            category = intent.getStringExtra(getString(R.string.EXTRA_FILTER_CATEGORY));
-            categoryText.setText(category);
+        Chip chip = new Chip(FilterActivity.this);
+        chip.setText(category);
+        chip.setCloseIconVisible(true);
+        selectedCategories.add(category);
+
+        chip.setOnCloseIconClickListener(this::onRemoveCategory);
+        binding.categoryChipGroup.addView(chip);
+    }
+
+    private void onRemoveCategory(View view) {
+        binding.categoryChipGroup.removeView(view);
+        Chip chipView = (Chip) view;
+        selectedCategories.remove(chipView.getText().toString());
+    }
+
+    private void bindDateField(View dateField, DialogInterface.OnClickListener onClickListener) {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this);
+        datePickerDialog.setButton(DatePickerDialog.BUTTON_POSITIVE, getString(R.string.date_picker_dialog_positive), onClickListener);
+        datePickerDialog.setButton(DatePickerDialog.BUTTON_NEGATIVE, getString(R.string.date_picker_dialog_negative), onClickListener);
+        datePickerDialog.setButton(DatePickerDialog.BUTTON_NEUTRAL, getString(R.string.date_picker_dialog_neutral), onClickListener);
+
+        dateField.setOnClickListener(_view -> datePickerDialog.show());
+        dateField.setOnFocusChangeListener((_view, hasFocus) -> {
+            if (hasFocus) {
+                datePickerDialog.show();
+            }
+        });
+    }
+
+    private void onSetFromDate(DialogInterface dialogInterface, int button) {
+        switch (button) {
+            case AlertDialog.BUTTON_POSITIVE:
+                fromDate = getDateFromDatePicker((DatePickerDialog) dialogInterface);
+                binding.fromDate.setText(fromDate.format(dateFormat));
+                break;
+            case AlertDialog.BUTTON_NEUTRAL:
+                fromDate = LocalDate.MIN;
+                binding.toDate.setText(toDate.format(dateFormat));
+                break;
+            case AlertDialog.BUTTON_NEGATIVE:
+            default:
+                break;
+        }
+
+        if (fromDate.isAfter(toDate)) {
+            binding.fromDate.setError("This date cannot be after the second date.");
         } else {
-            category = getString(R.string.filter_category_all);
-            categoryText.setText(category);
+            binding.fromDate.setError(null);
+            binding.toDate.setError(null);
+            binding.fromDate.clearFocus();
+        }
+    }
+
+    private void onSetToDate(DialogInterface dialogInterface, int button) {
+        switch (button) {
+            case AlertDialog.BUTTON_POSITIVE:
+                toDate = getDateFromDatePicker((DatePickerDialog) dialogInterface);
+                binding.toDate.setText(toDate.format(dateFormat));
+                break;
+            case AlertDialog.BUTTON_NEUTRAL:
+                toDate = LocalDate.MIN;
+                binding.toDate.setText(toDate.format(dateFormat));
+                break;
+            case AlertDialog.BUTTON_NEGATIVE:
+            default:
+                break;
         }
 
-        SharedPreferences preferences = getSharedPreferences(MainActivity.SHARED_PREF_FILE, MODE_PRIVATE);
-        ExpenseCategories expenseCategories = new ExpenseCategoriesBuilder()
-                .withDefaultCategoriesFromResources(getResources())
-                .withCategoriesFromSharedPrefs(preferences, MainActivity.CUSTOM_CATEGORIES)
-                .build();
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, expenseCategories.getCategories());
-        categoryText.setAdapter(adapter);
+        if (fromDate.isAfter(toDate)) {
+            binding.toDate.setError("This date cannot be before the first date.");
+        } else {
+            binding.fromDate.setError(null);
+            binding.toDate.setError(null);
+            binding.toDate.clearFocus();
+        }
     }
 
-    private void setDateText() {
-        String startDateText = start.format(DateTimeFormatter.ofPattern(getString(R.string.date_format_mmddyyyy)));
-        String endDateText = end.format(DateTimeFormatter.ofPattern(getString(R.string.date_format_mmddyyyy)));
-        String dateRange = startDateText + " - " + endDateText;
-        dateRangeText.setText(dateRange);
+    private LocalDate getDateFromDatePicker(DatePickerDialog datePickerDialog) {
+        DatePicker datePicker = datePickerDialog.getDatePicker();
+        int year = datePicker.getYear();
+        int month = datePicker.getMonth();
+        int day = datePicker.getDayOfMonth();
+        return LocalDate.of(year, month + 1, day);
     }
 
-    public void cancel(View view) {
+    private void onClickCancelButton(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         setResult(RESULT_CANCELED, intent);
         finish();
     }
 
-    public void clear(View view) {
+    private void onClickSaveButton(View view) {
+        if (fromDate.isAfter(toDate)) {
+            return;
+        }
+
         Intent intent = new Intent(this, MainActivity.class);
 
-        intent.putExtra(getString(R.string.EXTRA_FILTER_BY_DATE), false);
-        intent.putExtra(getString(R.string.EXTRA_FILTER_BY_CATEGORY), false);
+        intent.putExtra(getString(R.string.EXTRA_FILTER_FROM_DATE), fromDate.toEpochDay());
+        intent.putExtra(getString(R.string.EXTRA_FILTER_TO_DATE), toDate.toEpochDay());
+        String[] categories = selectedCategories.toArray(new String[0]);
+        intent.putExtra(getString(R.string.EXTRA_FILTER_CATEGORIES), categories);
 
         setResult(RESULT_OK, intent);
         finish();
     }
 
-    public void save(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
+    private void onClickClearButton(View view) {
+        fromDate = LocalDate.MIN;
+        toDate = LocalDate.MAX;
+        selectedCategories.clear();
 
-        if (start == null || end == null) {
-            intent.putExtra(getString(R.string.EXTRA_FILTER_BY_DATE), false);
-        } else {
-            intent.putExtra(getString(R.string.EXTRA_FILTER_BY_DATE), true);
-            intent.putExtra(getString(R.string.EXTRA_FILTER_DATE_START), start.toEpochDay());
-            intent.putExtra(getString(R.string.EXTRA_FILTER_DATE_END), end.toEpochDay());
-        }
-
-        category = categoryText.getText().toString();
-        intent.putExtra(getString(R.string.EXTRA_FILTER_BY_CATEGORY), true);
-        intent.putExtra(getString(R.string.EXTRA_FILTER_CATEGORY), category);
-
-        setResult(RESULT_OK, intent);
-        finish();
-    }
-
-    private LocalDate getToday() {
-        return LocalDate.now().atStartOfDay().toLocalDate();
-    }
-
-    public void setDateToday(View view) {
-        LocalDate today = getToday();
-        start = today;
-        end = today;
-        setDateText();
-    }
-
-    public void setDateYesterday(View view) {
-        LocalDate yesterday = getToday().minusDays(1);
-        start = yesterday;
-        end = yesterday;
-        setDateText();
-    }
-
-    public void setDateSpecificDay(View view) {
-        if (datePicker == null) {
-            datePicker = MaterialDatePicker.Builder.datePicker()
-                    .build();
-            datePicker.addOnPositiveButtonClickListener(dateEpoch -> {
-                LocalDate date = LocalDate.ofEpochDay(Duration.ofMillis(dateEpoch).toDays());
-                start = date;
-                end = date;
-                setDateText();
-            });
-        }
-
-        datePicker.show(getSupportFragmentManager(), TAG);
-    }
-
-    public void setDateThisWeek(View view) {
-        LocalDate today = getToday();
-        TemporalField dayOfWeek = WeekFields.of(Locale.getDefault()).dayOfWeek();
-        LocalDate startOfWeek = today.with(dayOfWeek, 1);
-        LocalDate endOfWeek = today.with(dayOfWeek, 7);
-        start = startOfWeek;
-        end = endOfWeek;
-        setDateText();
-    }
-
-    public void setDateLastWeek(View view) {
-        LocalDate today = getToday();
-        TemporalField dayOfWeek = WeekFields.of(Locale.getDefault()).dayOfWeek();
-        LocalDate startOfWeek = today.minusWeeks(1).with(dayOfWeek, 1);
-        LocalDate endOfWeek = today.minusWeeks(1).with(dayOfWeek, 7);
-        start = startOfWeek;
-        end = endOfWeek;
-        setDateText();
-    }
-
-    public void setDateThisMonth(View view) {
-        LocalDate today = getToday();
-        start = today.with(TemporalAdjusters.firstDayOfMonth());
-        end = today.with(TemporalAdjusters.lastDayOfMonth());
-        setDateText();
-    }
-
-    public void setDateLastMonth(View view) {
-        LocalDate today = getToday();
-        start = today.with(TemporalAdjusters.firstDayOfMonth()).minusMonths(1);
-        end = start.with(TemporalAdjusters.lastDayOfMonth());
-        setDateText();
-    }
-
-    public void setDateCustomRange(View view) {
-        if (dateRangePicker == null) {
-            dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
-                    .build();
-            dateRangePicker.addOnPositiveButtonClickListener(dateRange -> {
-                start = LocalDate.ofEpochDay(Duration.ofMillis(dateRange.first).toDays());
-                end = LocalDate.ofEpochDay(Duration.ofMillis(dateRange.second).toDays());
-                setDateText();
-            });
-        }
-
-        dateRangePicker.show(getSupportFragmentManager(), TAG);
+        binding.categories.setText("");
+        binding.categoryChipGroup.removeAllViews();
+        binding.fromDate.setText("");
+        binding.fromDate.setError(null);
+        binding.toDate.setText("");
+        binding.toDate.setError(null);
     }
 }
