@@ -52,7 +52,7 @@ public class SharedPrefsExpenseRepository implements ExpenseRepository {
     public void add(@NonNull Expense expense) {
         List<Expense> expenses = getAll();
 
-        int id = getId(expenses);
+        int id = getNewId(expenses);
         expense.setId(id);
 
         expenses.add(expense);
@@ -64,18 +64,18 @@ public class SharedPrefsExpenseRepository implements ExpenseRepository {
     public void addRange(List<Expense> expenses) {
         List<Expense> _expenses = getAll();
 
-        int id = getId(_expenses);
+        int id = getNewId(_expenses);
         for (int i = 0; i < expenses.size(); i++) {
-            id += i;
             Expense expense = expenses.get(i);
             expense.setId(id);
             _expenses.add(expense);
+            id++;
         }
 
         writeToSharedPreferences(_expenses);
     }
 
-    private int getId(@NonNull List<Expense> expenses) {
+    private int getNewId(@NonNull List<Expense> expenses) {
         Optional<Expense> highestId = expenses.stream()
                 .max(Comparator.comparingInt(Expense::getId));
 
