@@ -17,6 +17,7 @@ import com.google.android.material.chip.Chip;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.HashSet;
 
 import javax.inject.Inject;
@@ -28,7 +29,7 @@ public class FilterActivity extends AppCompatActivity {
     @Inject
     public ExpenseCategoryRepository _expenseCategoryRepository;
 
-    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
 
     private LocalDate fromDate;
     private LocalDate toDate;

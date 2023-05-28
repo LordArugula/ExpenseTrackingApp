@@ -15,12 +15,13 @@ import com.example.expense_tracking_app.models.Expense;
 
 import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 public class ExpenseAdapter extends ListAdapter<Expense, ExpenseAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ExpenseBinding binding;
 
-        private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        private final DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
         private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
 
         public ViewHolder(@NonNull View itemView) {

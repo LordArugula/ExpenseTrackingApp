@@ -18,6 +18,7 @@ import com.example.expense_tracking_app.services.ExpenseRepository;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 import javax.inject.Inject;
 
@@ -31,7 +32,8 @@ public class ExpenseActivity extends AppCompatActivity {
     public static final int EDIT_OPTION_NEW = 0;
     public static final int EDIT_OPTION_EXISTING = 1;
 
-    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
+
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
 
     @Inject

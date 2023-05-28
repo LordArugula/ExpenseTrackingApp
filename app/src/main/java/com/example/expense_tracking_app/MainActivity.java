@@ -22,6 +22,7 @@ import com.example.expense_tracking_app.services.ExpenseRepository;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -132,8 +133,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
-
-    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     private void onFilterActivityResult(@NonNull ActivityResult result) {
         int resultCode = result.getResultCode();
