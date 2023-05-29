@@ -4,10 +4,14 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
+import android.widget.EditText;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -43,6 +47,9 @@ public class FilterActivity extends AppCompatActivity {
         binding = ActivityFilterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        ActionBar supportActionBar = getSupportActionBar();
+        supportActionBar.setDisplayHomeAsUpEnabled(true);
+        supportActionBar.setTitle(R.string.filter_title);
 
         Intent intent = getIntent();
         long fromDateEpochDay = intent.getLongExtra(getString(R.string.EXTRA_FILTER_FROM_DATE), LocalDate.MIN.toEpochDay());
@@ -68,6 +75,17 @@ public class FilterActivity extends AppCompatActivity {
         binding.cancelButton.setOnClickListener(this::onClickCancelButton);
         binding.clearButton.setOnClickListener(this::onClickClearButton);
         binding.saveButton.setOnClickListener(this::onClickSaveButton);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                cancelFilterChanges();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -189,6 +207,10 @@ public class FilterActivity extends AppCompatActivity {
     }
 
     private void onClickCancelButton(View view) {
+        cancelFilterChanges();
+    }
+
+    private void cancelFilterChanges() {
         Intent intent = new Intent(this, MainActivity.class);
         setResult(RESULT_CANCELED, intent);
         finish();

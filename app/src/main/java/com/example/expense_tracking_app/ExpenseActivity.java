@@ -4,10 +4,13 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.expense_tracking_app.databinding.ActivityExpenseBinding;
@@ -48,14 +51,18 @@ public class ExpenseActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityExpenseBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
+        setContentView(binding.getRoot());
 
         Intent intent = getIntent();
         int editOption = intent.getIntExtra(EXTRA_EDIT_OPTION, EDIT_OPTION_NEW);
 
+        ActionBar supportActionBar = getSupportActionBar();
+        supportActionBar.setDisplayHomeAsUpEnabled(true);
+
         switch (editOption) {
             case EDIT_OPTION_EXISTING:
+                supportActionBar.setTitle(R.string.expense_title_edit);
+
                 Expense expense = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
                         ? intent.getParcelableExtra(EXTRA_EXPENSE, Expense.class)
                         : intent.getParcelableExtra(EXTRA_EXPENSE);
@@ -64,8 +71,21 @@ public class ExpenseActivity extends AppCompatActivity {
                 break;
             case EDIT_OPTION_NEW:
             default:
+                supportActionBar.setTitle(R.string.expense_title_create);
+
                 populateFormWithDefault();
                 break;
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                cancelChanges();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

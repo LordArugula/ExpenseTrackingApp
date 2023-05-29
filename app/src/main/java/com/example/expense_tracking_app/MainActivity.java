@@ -2,6 +2,8 @@ package com.example.expense_tracking_app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
@@ -21,8 +23,6 @@ import com.example.expense_tracking_app.services.ExpenseRepository;
 
 import java.text.NumberFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,8 +72,23 @@ public class MainActivity extends AppCompatActivity {
         binding.expensesRecyclerView.setAdapter(_expenseAdapter);
 
         binding.addExpenseButton.setOnClickListener(View -> onClickCreateExpense());
+    }
 
-        binding.filterButton.setOnClickListener(view -> onClickFiltersButton());
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_filter:
+                launchFilterActivity();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void addRandomExpenses(int count) {
@@ -109,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         expenseActivityResultLauncher.launch(intent);
     }
 
-    private void onClickFiltersButton() {
+    private void launchFilterActivity() {
         Intent intent = new Intent(this, FilterActivity.class);
 
         intent.putExtra(getString(R.string.EXTRA_FILTER_FROM_DATE), dateFilter.getStart().toEpochDay());
