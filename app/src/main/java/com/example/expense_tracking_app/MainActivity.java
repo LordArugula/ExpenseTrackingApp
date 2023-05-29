@@ -112,6 +112,10 @@ public class MainActivity extends AppCompatActivity {
     private void onClickFiltersButton() {
         Intent intent = new Intent(this, FilterActivity.class);
 
+        intent.putExtra(getString(R.string.EXTRA_FILTER_FROM_DATE), dateFilter.getStart().toEpochDay());
+        intent.putExtra(getString(R.string.EXTRA_FILTER_TO_DATE), dateFilter.getEnd().toEpochDay());
+        intent.putExtra(getString(R.string.EXTRA_FILTER_CATEGORIES), categoryFilter.getCategories());
+
         filterActivityResultLauncher.launch(intent);
     }
 

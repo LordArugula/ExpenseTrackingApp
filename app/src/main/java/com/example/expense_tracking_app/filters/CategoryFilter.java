@@ -34,4 +34,8 @@ public class CategoryFilter implements ExpenseFilter {
     public void includeCategories(String[] categories) {
         Collections.addAll(this.categories, categories);
     }
+
+    public String[] getCategories() {
+        return categories.toArray(new String[0]);
+    }
 }

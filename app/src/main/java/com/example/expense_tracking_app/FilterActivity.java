@@ -41,16 +41,25 @@ public class FilterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityFilterBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
+        setContentView(binding.getRoot());
 
-        selectedCategories = new HashSet<>();
 
-        fromDate = LocalDate.MIN;
-        toDate = LocalDate.MAX;
+        Intent intent = getIntent();
+        long fromDateEpochDay = intent.getLongExtra(getString(R.string.EXTRA_FILTER_FROM_DATE), LocalDate.MIN.toEpochDay());
+        long toDateEpochDay = intent.getLongExtra(getString(R.string.EXTRA_FILTER_TO_DATE), LocalDate.MAX.toEpochDay());
+        String[] filteredCategories = intent.getStringArrayExtra(getString(R.string.EXTRA_FILTER_CATEGORIES));
 
-        bindDateField(binding.fromDate, this::onSetFromDate);
-        bindDateField(binding.toDate, this::onSetToDate);
+        fromDate = LocalDate.ofEpochDay(fromDateEpochDay);
+        toDate = LocalDate.ofEpochDay(toDateEpochDay);
+        this.selectedCategories = new HashSet<>();
+
+        bindDateField(binding.fromDate, fromDate, this::onSetFromDate);
+        bindDateField(binding.toDate, toDate, this::onSetToDate);
+        if (filteredCategories != null) {
+            for (String category : filteredCategories) {
+                selectCategory(category);
+            }
+        }
 
         String[] categories = _expenseCategoryRepository.getAll();
         binding.categories.setSimpleItems(categories);
@@ -61,10 +70,29 @@ public class FilterActivity extends AppCompatActivity {
         binding.saveButton.setOnClickListener(this::onClickSaveButton);
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putStringArray("SELECTED_CATEGORIES", selectedCategories.toArray(new String[0]));
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        String[] categories = savedInstanceState.getStringArray("SELECTED_CATEGORIES");
+        for (String category : categories) {
+            selectCategory(category);
+        }
+    }
+
     private void onSelectCategory(AdapterView<?> adapterView, View view, int position, long l) {
         String category = (String) adapterView.getItemAtPosition(position);
         binding.categories.setText("");
 
+        selectCategory(category);
+    }
+
+    private void selectCategory(String category) {
         if (selectedCategories.contains(category)) {
             return;
         }
@@ -84,7 +112,13 @@ public class FilterActivity extends AppCompatActivity {
         selectedCategories.remove(chipView.getText().toString());
     }
 
-    private void bindDateField(View dateField, DialogInterface.OnClickListener onClickListener) {
+    private void bindDateField(EditText dateField, LocalDate date, DialogInterface.OnClickListener onClickListener) {
+        if (date.equals(LocalDate.MIN) || date.equals(LocalDate.MAX)) {
+            dateField.setText("");
+        } else {
+            dateField.setText(date.format(dateFormat));
+        }
+
         DatePickerDialog datePickerDialog = new DatePickerDialog(this);
         datePickerDialog.setButton(DatePickerDialog.BUTTON_POSITIVE, getString(R.string.date_picker_dialog_positive), onClickListener);
         datePickerDialog.setButton(DatePickerDialog.BUTTON_NEGATIVE, getString(R.string.date_picker_dialog_negative), onClickListener);
@@ -106,7 +140,7 @@ public class FilterActivity extends AppCompatActivity {
                 break;
             case AlertDialog.BUTTON_NEUTRAL:
                 fromDate = LocalDate.MIN;
-                binding.toDate.setText(toDate.format(dateFormat));
+                binding.fromDate.setText("");
                 break;
             case AlertDialog.BUTTON_NEGATIVE:
             default:
@@ -129,8 +163,8 @@ public class FilterActivity extends AppCompatActivity {
                 binding.toDate.setText(toDate.format(dateFormat));
                 break;
             case AlertDialog.BUTTON_NEUTRAL:
-                toDate = LocalDate.MIN;
-                binding.toDate.setText(toDate.format(dateFormat));
+                toDate = LocalDate.MAX;
+                binding.toDate.setText("");
                 break;
             case AlertDialog.BUTTON_NEGATIVE:
             default:
