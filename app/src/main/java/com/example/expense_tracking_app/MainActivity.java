@@ -91,26 +91,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void addRandomExpenses(int count) {
-        java.util.Random random = new java.util.Random(0);
-        String[] names = new String[]{
-                "Stuff", "Things", "Hello", "Foo", "Bar", "Java", "Android",
-                "Cringe", "World", "Money", "Stinky", "Blue", "Red", "Green", "Yellow"
-        };
-
-        String[] categories = _expenseCategoryRepository.getAll();
-        List<Expense> expenses = new ArrayList<>(count);
-        for (int i = 0; i < count; i++) {
-            String name = names[random.nextInt(names.length)];
-            LocalDate date = LocalDate.of(2023, 1 + random.nextInt(12), 1 + random.nextInt(28));
-            double cost = (double) random.nextInt(25000) / (double) 100;
-
-            Expense expense = new Expense(name, date, cost, categories[random.nextInt(categories.length)], "", "");
-            expenses.add(expense);
-        }
-        _expenseRepository.addRange(expenses);
-    }
-
     private void onSelectExpense(Expense expense, int position) {
         Intent intent = new Intent(this, ExpenseActivity.class);
         intent.putExtra(ExpenseActivity.EXTRA_EDIT_OPTION, ExpenseActivity.EDIT_OPTION_EXISTING);
