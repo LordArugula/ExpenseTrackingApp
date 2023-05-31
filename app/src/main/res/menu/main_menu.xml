@@ -6,4 +6,8 @@
         android:icon="@drawable/filter"
         android:title="@string/action_filter"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_summary"
+        android:title="Summary"
+        app:showAsAction="never" />
 </menu>

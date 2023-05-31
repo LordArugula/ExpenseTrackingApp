@@ -86,6 +86,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_filter:
                 launchFilterActivity();
                 return true;
+            case R.id.action_summary:
+                Intent intent = new Intent(this, SummaryActivity.class);
+                startActivity(intent);
             default:
                 return super.onOptionsItemSelected(item);
         }
