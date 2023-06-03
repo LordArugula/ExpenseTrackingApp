@@ -81,6 +81,14 @@ public class SharedPrefsExpenseCategoryRepository implements ExpenseCategoryRepo
         return removed;
     }
 
+    @Override
+    public void clearCustom() {
+        _customCategories.clear();
+        _sharedPreferences.edit()
+                .remove(CUSTOM_CATEGORIES_KEY)
+                .commit();
+    }
+
     private void writeToSharedPreferences() {
         _sharedPreferences.edit()
                 .putStringSet(CUSTOM_CATEGORIES_KEY, _customCategories)

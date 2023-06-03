@@ -80,7 +80,7 @@ public class SharedPrefsExpenseRepository implements ExpenseRepository {
                 .max(Comparator.comparingInt(Expense::getId));
 
         return highestId.map(Expense::getId)
-                .orElse(-1) + 1;
+                .orElse(0) + 1;
     }
 
     @Override
@@ -128,7 +128,7 @@ public class SharedPrefsExpenseRepository implements ExpenseRepository {
 
     public void clear() {
         _sharedPreferences.edit()
-                .clear()
+                .remove(EXPENSES_KEY)
                 .commit();
     }
 

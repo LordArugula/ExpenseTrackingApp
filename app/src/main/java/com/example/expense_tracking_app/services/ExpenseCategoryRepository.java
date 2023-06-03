@@ -9,4 +9,5 @@ public interface ExpenseCategoryRepository {
     void add(String category);
     boolean remove(String category);
     boolean rename(String oldCategory, String newCategory);
+    void clearCustom();
 }
