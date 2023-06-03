@@ -2,12 +2,15 @@ package com.example.expense_tracking_app;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
+import com.androidplot.pie.PieChart;
 import com.androidplot.pie.Segment;
 import com.androidplot.pie.SegmentFormatter;
-import com.example.expense_tracking_app.databinding.ActivitySummaryBinding;
 import com.example.expense_tracking_app.models.Expense;
 import com.example.expense_tracking_app.services.ExpenseRepository;
 
@@ -21,23 +24,23 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class SummaryActivity extends AppCompatActivity {
-
-    private static final float SELECTED_SEGMENT_OFFSET = 25;
-    @Inject
-    public ExpenseRepository expenseRepository;
+public class SummaryFragment extends Fragment {
 
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
 
-    private ActivitySummaryBinding binding;
+    @Inject
+    public ExpenseRepository _expenseRepository;
+
+    public SummaryFragment() {
+        // Required empty public constructor
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivitySummaryBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_summary, container, false);
 
-        List<Expense> expenses = expenseRepository.getAll();
+        List<Expense> expenses = _expenseRepository.getAll();
         Map<String, Double> categoryCostMap = new HashMap<>();
         for (Expense expense : expenses) {
             if (categoryCostMap.containsKey(expense.getCategory())) {
@@ -47,6 +50,9 @@ public class SummaryActivity extends AppCompatActivity {
                 categoryCostMap.put(expense.getCategory(), expense.getCost());
             }
         }
+
+        PieChart pieChart = view.findViewById(R.id.pie_chart);
+        pieChart.getBackgroundPaint().setColor(Color.TRANSPARENT);
 
         int i = 0;
         float step = 360f / categoryCostMap.size();
@@ -58,7 +64,9 @@ public class SummaryActivity extends AppCompatActivity {
             float[] hsv = new float[]{step * i++, 0.8f, 0.9f};
             int color = Color.HSVToColor(hsv);
             SegmentFormatter segmentFormatter = new SegmentFormatter(color, color);
-            binding.pieChart.addSegment(segment, segmentFormatter);
+            pieChart.addSegment(segment, segmentFormatter);
         }
+
+        return view;
     }
 }

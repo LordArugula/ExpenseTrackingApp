@@ -30,22 +30,22 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class FilterActivity extends AppCompatActivity {
+    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
+
     @Inject
     public ExpenseCategoryRepository _expenseCategoryRepository;
 
-    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
+    private LocalDate _fromDate;
+    private LocalDate _toDate;
+    private HashSet<String> _selectedCategories;
 
-    private LocalDate fromDate;
-    private LocalDate toDate;
-    private HashSet<String> selectedCategories;
-
-    private ActivityFilterBinding binding;
+    private ActivityFilterBinding _binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityFilterBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        _binding = ActivityFilterBinding.inflate(getLayoutInflater());
+        setContentView(_binding.getRoot());
 
         ActionBar supportActionBar = getSupportActionBar();
         supportActionBar.setDisplayHomeAsUpEnabled(true);
@@ -56,12 +56,12 @@ public class FilterActivity extends AppCompatActivity {
         long toDateEpochDay = intent.getLongExtra(getString(R.string.EXTRA_FILTER_TO_DATE), LocalDate.MAX.toEpochDay());
         String[] filteredCategories = intent.getStringArrayExtra(getString(R.string.EXTRA_FILTER_CATEGORIES));
 
-        fromDate = LocalDate.ofEpochDay(fromDateEpochDay);
-        toDate = LocalDate.ofEpochDay(toDateEpochDay);
-        this.selectedCategories = new HashSet<>();
+        _fromDate = LocalDate.ofEpochDay(fromDateEpochDay);
+        _toDate = LocalDate.ofEpochDay(toDateEpochDay);
+        this._selectedCategories = new HashSet<>();
 
-        bindDateField(binding.fromDate, fromDate, this::onSetFromDate);
-        bindDateField(binding.toDate, toDate, this::onSetToDate);
+        bindDateField(_binding.fromDate, _fromDate, this::onSetFromDate);
+        bindDateField(_binding.toDate, _toDate, this::onSetToDate);
         if (filteredCategories != null) {
             for (String category : filteredCategories) {
                 selectCategory(category);
@@ -69,12 +69,12 @@ public class FilterActivity extends AppCompatActivity {
         }
 
         String[] categories = _expenseCategoryRepository.getAll();
-        binding.categories.setSimpleItems(categories);
-        binding.categories.setOnItemClickListener(this::onSelectCategory);
+        _binding.categories.setSimpleItems(categories);
+        _binding.categories.setOnItemClickListener(this::onSelectCategory);
 
-        binding.cancelButton.setOnClickListener(this::onClickCancelButton);
-        binding.clearButton.setOnClickListener(this::onClickClearButton);
-        binding.saveButton.setOnClickListener(this::onClickSaveButton);
+        _binding.cancelButton.setOnClickListener(this::onClickCancelButton);
+        _binding.clearButton.setOnClickListener(this::onClickClearButton);
+        _binding.saveButton.setOnClickListener(this::onClickSaveButton);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class FilterActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putStringArray("SELECTED_CATEGORIES", selectedCategories.toArray(new String[0]));
+        outState.putStringArray("SELECTED_CATEGORIES", _selectedCategories.toArray(new String[0]));
         super.onSaveInstanceState(outState);
     }
 
@@ -105,29 +105,29 @@ public class FilterActivity extends AppCompatActivity {
 
     private void onSelectCategory(AdapterView<?> adapterView, View view, int position, long l) {
         String category = (String) adapterView.getItemAtPosition(position);
-        binding.categories.setText("");
+        _binding.categories.setText("");
 
         selectCategory(category);
     }
 
     private void selectCategory(String category) {
-        if (selectedCategories.contains(category)) {
+        if (_selectedCategories.contains(category)) {
             return;
         }
 
         Chip chip = new Chip(FilterActivity.this);
         chip.setText(category);
         chip.setCloseIconVisible(true);
-        selectedCategories.add(category);
+        _selectedCategories.add(category);
 
         chip.setOnCloseIconClickListener(this::onRemoveCategory);
-        binding.categoryChipGroup.addView(chip);
+        _binding.categoryChipGroup.addView(chip);
     }
 
     private void onRemoveCategory(View view) {
-        binding.categoryChipGroup.removeView(view);
+        _binding.categoryChipGroup.removeView(view);
         Chip chipView = (Chip) view;
-        selectedCategories.remove(chipView.getText().toString());
+        _selectedCategories.remove(chipView.getText().toString());
     }
 
     private void bindDateField(EditText dateField, LocalDate date, DialogInterface.OnClickListener onClickListener) {
@@ -153,48 +153,48 @@ public class FilterActivity extends AppCompatActivity {
     private void onSetFromDate(DialogInterface dialogInterface, int button) {
         switch (button) {
             case AlertDialog.BUTTON_POSITIVE:
-                fromDate = getDateFromDatePicker((DatePickerDialog) dialogInterface);
-                binding.fromDate.setText(fromDate.format(dateFormat));
+                _fromDate = getDateFromDatePicker((DatePickerDialog) dialogInterface);
+                _binding.fromDate.setText(_fromDate.format(dateFormat));
                 break;
             case AlertDialog.BUTTON_NEUTRAL:
-                fromDate = LocalDate.MIN;
-                binding.fromDate.setText("");
+                _fromDate = LocalDate.MIN;
+                _binding.fromDate.setText("");
                 break;
             case AlertDialog.BUTTON_NEGATIVE:
             default:
                 break;
         }
 
-        if (fromDate.isAfter(toDate)) {
-            binding.fromDate.setError("This date cannot be after the second date.");
+        if (_fromDate.isAfter(_toDate)) {
+            _binding.fromDate.setError("This date cannot be after the second date.");
         } else {
-            binding.fromDate.setError(null);
-            binding.toDate.setError(null);
-            binding.fromDate.clearFocus();
+            _binding.fromDate.setError(null);
+            _binding.toDate.setError(null);
+            _binding.fromDate.clearFocus();
         }
     }
 
     private void onSetToDate(DialogInterface dialogInterface, int button) {
         switch (button) {
             case AlertDialog.BUTTON_POSITIVE:
-                toDate = getDateFromDatePicker((DatePickerDialog) dialogInterface);
-                binding.toDate.setText(toDate.format(dateFormat));
+                _toDate = getDateFromDatePicker((DatePickerDialog) dialogInterface);
+                _binding.toDate.setText(_toDate.format(dateFormat));
                 break;
             case AlertDialog.BUTTON_NEUTRAL:
-                toDate = LocalDate.MAX;
-                binding.toDate.setText("");
+                _toDate = LocalDate.MAX;
+                _binding.toDate.setText("");
                 break;
             case AlertDialog.BUTTON_NEGATIVE:
             default:
                 break;
         }
 
-        if (fromDate.isAfter(toDate)) {
-            binding.toDate.setError("This date cannot be before the first date.");
+        if (_fromDate.isAfter(_toDate)) {
+            _binding.toDate.setError("This date cannot be before the first date.");
         } else {
-            binding.fromDate.setError(null);
-            binding.toDate.setError(null);
-            binding.toDate.clearFocus();
+            _binding.fromDate.setError(null);
+            _binding.toDate.setError(null);
+            _binding.toDate.clearFocus();
         }
     }
 
@@ -217,15 +217,15 @@ public class FilterActivity extends AppCompatActivity {
     }
 
     private void onClickSaveButton(View view) {
-        if (fromDate.isAfter(toDate)) {
+        if (_fromDate.isAfter(_toDate)) {
             return;
         }
 
         Intent intent = new Intent(this, MainActivity.class);
 
-        intent.putExtra(getString(R.string.EXTRA_FILTER_FROM_DATE), fromDate.toEpochDay());
-        intent.putExtra(getString(R.string.EXTRA_FILTER_TO_DATE), toDate.toEpochDay());
-        String[] categories = selectedCategories.toArray(new String[0]);
+        intent.putExtra(getString(R.string.EXTRA_FILTER_FROM_DATE), _fromDate.toEpochDay());
+        intent.putExtra(getString(R.string.EXTRA_FILTER_TO_DATE), _toDate.toEpochDay());
+        String[] categories = _selectedCategories.toArray(new String[0]);
         intent.putExtra(getString(R.string.EXTRA_FILTER_CATEGORIES), categories);
 
         setResult(RESULT_OK, intent);
@@ -233,15 +233,15 @@ public class FilterActivity extends AppCompatActivity {
     }
 
     private void onClickClearButton(View view) {
-        fromDate = LocalDate.MIN;
-        toDate = LocalDate.MAX;
-        selectedCategories.clear();
+        _fromDate = LocalDate.MIN;
+        _toDate = LocalDate.MAX;
+        _selectedCategories.clear();
 
-        binding.categories.setText("");
-        binding.categoryChipGroup.removeAllViews();
-        binding.fromDate.setText("");
-        binding.fromDate.setError(null);
-        binding.toDate.setText("");
-        binding.toDate.setError(null);
+        _binding.categories.setText("");
+        _binding.categoryChipGroup.removeAllViews();
+        _binding.fromDate.setText("");
+        _binding.fromDate.setError(null);
+        _binding.toDate.setText("");
+        _binding.toDate.setError(null);
     }
 }

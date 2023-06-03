@@ -18,29 +18,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
 public class ExpenseAdapter extends ListAdapter<Expense, ExpenseAdapter.ViewHolder> {
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final ExpenseBinding binding;
-
-        private final DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
-        private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            binding = ExpenseBinding.bind(itemView);
-        }
-
-        public void bind(Expense expense) {
-            binding.name.setText(expense.getName());
-            binding.category.setText(expense.getCategory());
-            binding.date.setText(dateFormat.format(expense.getDate()));
-            binding.cost.setText(currencyFormat.format(expense.getCost()));
-        }
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(Expense expense, int position);
-    }
-
     private final OnItemClickListener _onItemClickListener;
 
     public ExpenseAdapter(OnItemClickListener onItemClickListener) {
@@ -65,5 +42,28 @@ public class ExpenseAdapter extends ListAdapter<Expense, ExpenseAdapter.ViewHold
         Expense expense = getItem(position);
         holder.bind(expense);
         holder.itemView.setOnClickListener(view -> this._onItemClickListener.onItemClick(expense, position));
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Expense expense, int position);
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        private final ExpenseBinding _binding;
+
+        private final DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
+        private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            _binding = ExpenseBinding.bind(itemView);
+        }
+
+        public void bind(Expense expense) {
+            _binding.name.setText(expense.getName());
+            _binding.category.setText(expense.getCategory());
+            _binding.date.setText(dateFormat.format(expense.getDate()));
+            _binding.cost.setText(currencyFormat.format(expense.getCost()));
+        }
     }
 }

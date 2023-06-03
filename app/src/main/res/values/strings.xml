@@ -49,4 +49,10 @@
         <item>Shopping</item>
         <item>Travel</item>
     </string-array>
+    <string name="expenses_tab">Expenses</string>
+    <string name="summary_tab">Summary</string>
+    <string name="expenses_pie_chart_description">Expenses pie chart by category</string>
+    <string name="expenses_list_description">List of expenses</string>
+    <string name="currency_description">Currency symbol</string>
+    <string name="tab_layout_description">Main Tabs</string>
 </resources>

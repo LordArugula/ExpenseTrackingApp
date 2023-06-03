@@ -54,9 +54,11 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/currency"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.25"
+                    android:layout_gravity="center_vertical|end"
+                    android:minWidth="64dp"
+                    android:contentDescription="@string/currency_description"
                     android:textAlignment="textEnd"
                     android:textSize="18sp" />
 
@@ -72,8 +74,7 @@
                         android:id="@+id/cost"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number|numberDecimal|numberSigned"
-                        android:textColorHint="#616161" />
+                        android:inputType="number|numberDecimal|numberSigned" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
