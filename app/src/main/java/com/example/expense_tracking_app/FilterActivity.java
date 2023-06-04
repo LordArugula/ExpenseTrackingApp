@@ -14,9 +14,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.expense_tracking_app.databinding.ActivityFilterBinding;
-import com.example.expense_tracking_app.services.ExpenseCategoryRepository;
+import com.example.expense_tracking_app.viewmodels.ExpenseListViewModel;
 import com.google.android.material.chip.Chip;
 
 import java.time.LocalDate;
@@ -24,22 +25,18 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.HashSet;
 
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class FilterActivity extends AppCompatActivity {
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
 
-    @Inject
-    public ExpenseCategoryRepository _expenseCategoryRepository;
-
     private LocalDate _fromDate;
     private LocalDate _toDate;
     private HashSet<String> _selectedCategories;
 
     private ActivityFilterBinding _binding;
+    private ExpenseListViewModel expenseListViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +65,9 @@ public class FilterActivity extends AppCompatActivity {
             }
         }
 
-        String[] categories = _expenseCategoryRepository.getAll();
+        expenseListViewModel = new ViewModelProvider(this)
+                .get(ExpenseListViewModel.class);
+        String[] categories = expenseListViewModel.getCategories();
         _binding.categories.setSimpleItems(categories);
         _binding.categories.setOnItemClickListener(this::onSelectCategory);
 

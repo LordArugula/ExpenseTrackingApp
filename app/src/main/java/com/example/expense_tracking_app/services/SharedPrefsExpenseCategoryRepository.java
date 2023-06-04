@@ -1,5 +1,6 @@
 package com.example.expense_tracking_app.services;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 
@@ -28,7 +29,7 @@ public class SharedPrefsExpenseCategoryRepository implements ExpenseCategoryRepo
 
         String[] defaultCategories = resources.getStringArray(R.array.expense_categories);
         _defaultCategories = new TreeSet<>(Arrays.asList(defaultCategories));
-        _customCategories = sharedPreferences.getStringSet(CUSTOM_CATEGORIES_KEY, new TreeSet<>());
+        _customCategories = _sharedPreferences.getStringSet(CUSTOM_CATEGORIES_KEY, new TreeSet<>());
     }
 
     @Override

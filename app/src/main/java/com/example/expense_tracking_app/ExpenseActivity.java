@@ -12,24 +12,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.expense_tracking_app.databinding.ActivityExpenseBinding;
 import com.example.expense_tracking_app.models.Expense;
-import com.example.expense_tracking_app.services.ExpenseCategoryRepository;
-import com.example.expense_tracking_app.services.ExpenseRepository;
+import com.example.expense_tracking_app.viewmodels.ExpenseListViewModel;
 
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class ExpenseActivity extends AppCompatActivity {
     public static final String EXTRA_EXPENSE = "EXTRA_EXPENSE";
+    public static final String EXTRA_EXPENSE_ID = "EXTRA_EXPENSE_ID";
 
     public static final String EDIT = "EXPENSE_EDIT";
     public static final int EDIT_OPTION_NEW = 0;
@@ -39,13 +38,8 @@ public class ExpenseActivity extends AppCompatActivity {
 
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
 
-    @Inject
-    public ExpenseRepository _expenseRepository;
-
-    @Inject
-    public ExpenseCategoryRepository _expenseCategoryRepository;
-
     private ActivityExpenseBinding _binding;
+    private ExpenseListViewModel expenseListViewModel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,6 +52,9 @@ public class ExpenseActivity extends AppCompatActivity {
 
         ActionBar supportActionBar = getSupportActionBar();
         supportActionBar.setDisplayHomeAsUpEnabled(true);
+
+        expenseListViewModel = new ViewModelProvider(this)
+                .get(ExpenseListViewModel.class);
 
         switch (editOption) {
             case EDIT_OPTION_EXISTING:
@@ -96,7 +93,7 @@ public class ExpenseActivity extends AppCompatActivity {
         initializeDatePicker(LocalDate.now());
 
         _binding.category.setText(R.string.expense_category_default);
-        _binding.category.setSimpleItems(_expenseCategoryRepository.getAll());
+        _binding.category.setSimpleItems(expenseListViewModel.getCategories());
 
         String currencyString = currencyFormat.format(0);
         _binding.currency.setText(currencyString.subSequence(0, 1));
@@ -124,7 +121,7 @@ public class ExpenseActivity extends AppCompatActivity {
         _binding.notes.setText(expense.getNotes());
 
         _binding.category.setText(expense.getCategory());
-        _binding.category.setSimpleItems(_expenseCategoryRepository.getAll());
+        _binding.category.setSimpleItems(expenseListViewModel.getCategories());
 
         initializeButtons(expense);
     }
@@ -168,9 +165,10 @@ public class ExpenseActivity extends AppCompatActivity {
      * Deletes the expenses and returns to the MainActivity.
      */
     private void deleteExpense(int id) {
-        _expenseRepository.remove(id);
+//        _expenseRepository.remove(id);
 
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(EXTRA_EXPENSE_ID, id);
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -211,15 +209,10 @@ public class ExpenseActivity extends AppCompatActivity {
         }
 
         Expense expense = new Expense(name, date, cost, category, reason, notes);
-        if (_expenseRepository.contains(id)) {
-            _expenseRepository.update(id, expense);
-        } else {
-            _expenseRepository.add(expense);
-        }
-
-        _expenseCategoryRepository.add(category);
+        expense.setId(id);
 
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(EXTRA_EXPENSE, expense);
         setResult(RESULT_OK, intent);
         finish();
     }

@@ -6,20 +6,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.androidplot.pie.PieChart;
 import com.androidplot.pie.Segment;
 import com.androidplot.pie.SegmentFormatter;
 import com.example.expense_tracking_app.models.Expense;
-import com.example.expense_tracking_app.services.ExpenseRepository;
+import com.example.expense_tracking_app.viewmodels.ExpenseListViewModel;
 
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -28,8 +28,8 @@ public class SummaryFragment extends Fragment {
 
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
 
-    @Inject
-    public ExpenseRepository _expenseRepository;
+    private ExpenseListViewModel expenseListViewModel;
+    private PieChart pieChart;
 
     public SummaryFragment() {
         // Required empty public constructor
@@ -40,8 +40,27 @@ public class SummaryFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_summary, container, false);
 
-        List<Expense> expenses = _expenseRepository.getAll();
+        expenseListViewModel = new ViewModelProvider(getActivity())
+                .get(ExpenseListViewModel.class);
+
+        expenseListViewModel.getExpenses()
+                .observe(getViewLifecycleOwner(), this::onExpensesChanged);
+
+        pieChart = view.findViewById(R.id.pie_chart);
+        pieChart.getBackgroundPaint().setColor(Color.TRANSPARENT);
+
+        return view;
+    }
+
+    private void onExpensesChanged(List<Expense> expenses) {
+        Map<String, Double> categoryCostMap = createCategoryCostMap(expenses);
+        createPieChartSections(categoryCostMap);
+    }
+
+    @NonNull
+    private static Map<String, Double> createCategoryCostMap(List<Expense> expenses) {
         Map<String, Double> categoryCostMap = new HashMap<>();
+
         for (Expense expense : expenses) {
             if (categoryCostMap.containsKey(expense.getCategory())) {
                 Double cost = categoryCostMap.get(expense.getCategory());
@@ -51,22 +70,24 @@ public class SummaryFragment extends Fragment {
             }
         }
 
-        PieChart pieChart = view.findViewById(R.id.pie_chart);
-        pieChart.getBackgroundPaint().setColor(Color.TRANSPARENT);
+        return categoryCostMap;
+    }
 
-        int i = 0;
+    private void createPieChartSections(Map<String, Double> categoryCostMap) {
         float step = 360f / categoryCostMap.size();
+        int i = 0;
+
+        pieChart.getRegistry().clear();
         for (Map.Entry<String, Double> entry : categoryCostMap.entrySet()) {
             String category = entry.getKey();
             Double cost = entry.getValue();
             Segment segment = new Segment(String.format("%s\n%s", category, currencyFormat.format(cost)), cost);
 
-            float[] hsv = new float[]{step * i++, 0.8f, 0.9f};
+            float[] hsv = new float[]{step * i, 0.8f, 0.9f};
             int color = Color.HSVToColor(hsv);
             SegmentFormatter segmentFormatter = new SegmentFormatter(color, color);
             pieChart.addSegment(segment, segmentFormatter);
+            i++;
         }
-
-        return view;
     }
 }
