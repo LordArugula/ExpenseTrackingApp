@@ -23,6 +23,7 @@ import com.example.expense_tracking_app.models.Expense;
 import com.example.expense_tracking_app.viewmodels.ExpenseListViewModel;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -136,6 +137,9 @@ public class ExpenseListFragment extends Fragment {
     }
 
     private void onExpensesChanged(List<Expense> expenses) {
+        expenses.sort(Comparator.comparing(Expense::getDate)
+                .reversed()
+                .thenComparing((a, b) -> a.getName().compareToIgnoreCase(b.getName())));
         _expenseAdapter.submitList(expenses);
     }
 }

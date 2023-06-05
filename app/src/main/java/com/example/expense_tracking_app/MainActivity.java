@@ -8,13 +8,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.expense_tracking_app.adapters.ViewPagerFragmentAdapter;
-import com.example.expense_tracking_app.services.ExpenseCategoryRepository;
-import com.example.expense_tracking_app.services.ExpenseRepository;
 import com.example.expense_tracking_app.viewmodels.ExpenseListViewModel;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-
-import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 

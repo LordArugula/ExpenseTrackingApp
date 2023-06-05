@@ -21,4 +21,6 @@ public interface ExpenseRepository {
     void clear();
 
     boolean contains(int id);
+
+    String[] getCategories();
 }

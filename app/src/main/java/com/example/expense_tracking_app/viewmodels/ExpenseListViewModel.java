@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel;
 import com.example.expense_tracking_app.filters.CategoryFilter;
 import com.example.expense_tracking_app.filters.DateFilter;
 import com.example.expense_tracking_app.models.Expense;
-import com.example.expense_tracking_app.services.ExpenseCategoryRepository;
 import com.example.expense_tracking_app.services.ExpenseRepository;
 
 import java.time.LocalDate;
@@ -22,24 +21,18 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public class ExpenseListViewModel extends ViewModel {
     private final ExpenseRepository expenseRepository;
-    private final ExpenseCategoryRepository expenseCategoryRepository;
 
     private final MutableLiveData<List<Expense>> expenses;
-    private final MutableLiveData<String[]> categories;
 
     private final MutableLiveData<DateFilter> _dateFilter;
     private final MutableLiveData<CategoryFilter> _categoryFilter;
 
     @Inject
-    public ExpenseListViewModel(ExpenseRepository expenseRepository, ExpenseCategoryRepository expenseCategoryRepository) {
+    public ExpenseListViewModel(ExpenseRepository expenseRepository) {
         this.expenseRepository = expenseRepository;
-        this.expenseCategoryRepository = expenseCategoryRepository;
 
         expenses = new MutableLiveData<>();
         expenses.setValue(expenseRepository.getAll());
-
-        categories = new MutableLiveData<>();
-        categories.setValue(expenseCategoryRepository.getAll());
 
         _dateFilter = new MutableLiveData<>(new DateFilter());
         _categoryFilter = new MutableLiveData<>(new CategoryFilter());
@@ -56,9 +49,6 @@ public class ExpenseListViewModel extends ViewModel {
             expenseRepository.add(expense);
         }
 
-        expenseCategoryRepository.add(expense.getCategory());
-
-        categories.postValue(expenseCategoryRepository.getAll());
         expenses.postValue(expenseRepository.getAll());
     }
 
@@ -90,6 +80,6 @@ public class ExpenseListViewModel extends ViewModel {
     }
 
     public String[] getCategories() {
-        return expenseCategoryRepository.getAll();
+        return expenseRepository.getCategories();
     }
 }
