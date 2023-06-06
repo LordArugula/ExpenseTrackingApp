@@ -67,6 +67,7 @@ public class ExpenseListFragment extends Fragment {
 
         ImageButton addButton = view.findViewById(R.id.add_expense_fab);
         addButton.setOnClickListener(this::onClickAddExpenseButton);
+        DragManipulator.manipulate(addButton, 64, getResources().getDimension(R.dimen.fab_margin));
 
         return view;
     }
