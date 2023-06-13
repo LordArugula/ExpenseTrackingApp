@@ -9,9 +9,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.example.expense_tracking_app.ExpenseListFragment;
 import com.example.expense_tracking_app.SummaryFragment;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ViewPagerFragmentAdapter extends FragmentStateAdapter {
 
     public ViewPagerFragmentAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {

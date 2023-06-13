@@ -16,6 +16,7 @@ import com.example.expense_tracking_app.models.Expense;
 import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Locale;
 
 public class ExpenseAdapter extends ListAdapter<Expense, ExpenseAdapter.ViewHolder> {
     private final OnItemClickListener _onItemClickListener;
@@ -52,7 +53,7 @@ public class ExpenseAdapter extends ListAdapter<Expense, ExpenseAdapter.ViewHold
         private final ExpenseBinding _binding;
 
         private final DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
-        private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+        private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault());
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

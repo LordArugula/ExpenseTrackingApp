@@ -1,14 +1,9 @@
 package com.example.expense_tracking_app;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,19 +11,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.expense_tracking_app.adapters.ViewPagerFragmentAdapter;
-import com.example.expense_tracking_app.filters.CategoryFilter;
-import com.example.expense_tracking_app.filters.DateFilter;
-import com.example.expense_tracking_app.models.Expense;
-import com.example.expense_tracking_app.sorters.ExpenseComparator;
 import com.example.expense_tracking_app.viewmodels.ExpenseListViewModel;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-
-import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.Map;
-
-import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 

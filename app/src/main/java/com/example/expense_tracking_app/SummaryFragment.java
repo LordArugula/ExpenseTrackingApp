@@ -18,6 +18,7 @@ import com.example.expense_tracking_app.viewmodels.ExpenseListViewModel;
 
 import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -26,7 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class SummaryFragment extends Fragment {
 
-    private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+    private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault());
 
     private ExpenseListViewModel expenseListViewModel;
     private PieChart pieChart;

@@ -22,6 +22,7 @@ import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Locale;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -36,7 +37,7 @@ public class ExpenseActivity extends AppCompatActivity {
 
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
 
-    private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+    private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault());
 
     private ActivityExpenseBinding _binding;
     private ExpenseListViewModel expenseListViewModel;

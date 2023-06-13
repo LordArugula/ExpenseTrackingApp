@@ -29,8 +29,8 @@ public class DragManipulator {
 
     private boolean onLongClick(View view) {
         View.DragShadowBuilder dragShadowBuilder = new View.DragShadowBuilder(view);
-        view.startDragAndDrop(new ClipData(new ClipDescription("", new String[0]), new ClipData.Item("")), dragShadowBuilder, null, View.DRAG_FLAG_GLOBAL);
-        return true;
+        return view.startDragAndDrop(new ClipData(new ClipDescription("", new String[0]), new ClipData.Item("")), dragShadowBuilder, null, View.DRAG_FLAG_GLOBAL);
+//        return true;
     }
 
     private boolean onDrag(View view, DragEvent dragEvent) {
