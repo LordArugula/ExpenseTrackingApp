@@ -41,7 +41,7 @@ public class ExpenseListViewModel extends ViewModel {
 
         _dateFilter = new MutableLiveData<>(new DateFilter());
         _categoryFilter = new MutableLiveData<>(new CategoryFilter());
-        _comparator = new MutableLiveData<>(expenseComparator);
+         _comparator = new MutableLiveData<>(expenseComparator);
 
         expenses = new MutableLiveData<>();
         updateViewExpenses();
@@ -96,7 +96,7 @@ public class ExpenseListViewModel extends ViewModel {
         dateFilter.setEnd(to);
         _dateFilter.postValue(dateFilter);
 
-        updateViewExpenses();
+        updateViewExpenses(dateFilter, _categoryFilter.getValue(), _comparator.getValue());
     }
 
     public LiveData<CategoryFilter> getCategoryFilter() {
@@ -109,7 +109,7 @@ public class ExpenseListViewModel extends ViewModel {
         categoryFilter.includeCategories(categories);
         _categoryFilter.postValue(categoryFilter);
 
-        updateViewExpenses();
+        updateViewExpenses(_dateFilter.getValue(), categoryFilter, _comparator.getValue());
     }
 
     public LiveData<ExpenseComparator> getComparator() {
@@ -119,17 +119,21 @@ public class ExpenseListViewModel extends ViewModel {
     public void setComparator(ExpenseComparator comparator) {
         _comparator.postValue(comparator);
 
-        updateViewExpenses();
+        updateViewExpenses(_dateFilter.getValue(), _categoryFilter.getValue(), comparator);
     }
 
-    private void updateViewExpenses() {
+    private void updateViewExpenses(DateFilter dateFilter, CategoryFilter categoryFilter, ExpenseComparator comparator) {
         List<Expense> filteredExpenses = expenseRepository.getAll()
                 .stream()
-                .filter(_dateFilter.getValue()::matches)
-                .filter(_categoryFilter.getValue()::matches)
-                .sorted(_comparator.getValue().getComparator())
+                .filter(dateFilter::matches)
+                .filter(categoryFilter::matches)
+                .sorted(comparator.getComparator())
                 .collect(Collectors.toList());
 
         expenses.postValue(Collections.unmodifiableList(filteredExpenses));
+    }
+
+    private void updateViewExpenses() {
+        updateViewExpenses(_dateFilter.getValue(), _categoryFilter.getValue(), _comparator.getValue());
     }
 }
