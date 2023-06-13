@@ -3,6 +3,7 @@ package com.example.expense_tracking_app.filters;
 import com.example.expense_tracking_app.models.Expense;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class CategoryFilter implements ExpenseFilter {
         categories.clear();
     }
 
-    public void includeCategories(List<String> categories) {
+    public void includeCategories(Collection<String> categories) {
         this.categories.addAll(categories);
     }
 

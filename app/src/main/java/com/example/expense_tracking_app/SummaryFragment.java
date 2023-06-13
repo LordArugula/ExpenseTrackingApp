@@ -17,9 +17,9 @@ import com.example.expense_tracking_app.models.Expense;
 import com.example.expense_tracking_app.viewmodels.ExpenseListViewModel;
 
 import java.text.NumberFormat;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -53,13 +53,18 @@ public class SummaryFragment extends Fragment {
     }
 
     private void onExpensesChanged(List<Expense> expenses) {
+        drawPieChart(expenses);
+    }
+
+    private void drawPieChart(List<Expense> expenses) {
+        pieChart.getRegistry().clear();
         Map<String, Double> categoryCostMap = createCategoryCostMap(expenses);
         createPieChartSections(categoryCostMap);
     }
 
     @NonNull
     private static Map<String, Double> createCategoryCostMap(List<Expense> expenses) {
-        Map<String, Double> categoryCostMap = new HashMap<>();
+        Map<String, Double> categoryCostMap = new TreeMap<>();
 
         for (Expense expense : expenses) {
             if (categoryCostMap.containsKey(expense.getCategory())) {
@@ -77,7 +82,6 @@ public class SummaryFragment extends Fragment {
         float step = 360f / categoryCostMap.size();
         int i = 0;
 
-        pieChart.getRegistry().clear();
         for (Map.Entry<String, Double> entry : categoryCostMap.entrySet()) {
             String category = entry.getKey();
             Double cost = entry.getValue();
@@ -89,5 +93,7 @@ public class SummaryFragment extends Fragment {
             pieChart.addSegment(segment, segmentFormatter);
             i++;
         }
+
+        pieChart.redraw();
     }
 }

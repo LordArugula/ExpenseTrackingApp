@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
@@ -16,14 +15,12 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.expense_tracking_app.adapters.ExpenseAdapter;
+import com.example.expense_tracking_app.databinding.FragmentExpenseListBinding;
 import com.example.expense_tracking_app.models.Expense;
 import com.example.expense_tracking_app.viewmodels.ExpenseListViewModel;
 
-import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -38,10 +35,10 @@ public class ExpenseListFragment extends Fragment {
 
     private ExpenseAdapter _expenseAdapter;
 
+    private FragmentExpenseListBinding binding;
+
     private final ActivityResultLauncher<Intent> expenseActivityResultLauncher
             = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this::onExpenseActivityResult);
-    private final ActivityResultLauncher<Intent> filterActivityResultLauncher
-            = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this::onFilterActivityResult);
 
     public ExpenseListFragment() {
         // Required empty public constructor
@@ -51,6 +48,7 @@ public class ExpenseListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_expense_list, container, false);
+        binding = FragmentExpenseListBinding.bind(view);
 
         // Set the adapter
         _expenseAdapter = new ExpenseAdapter(this::onClickExpenseItem);
@@ -61,13 +59,11 @@ public class ExpenseListFragment extends Fragment {
         expenseListViewModel.getExpenses()
                 .observe(getViewLifecycleOwner(), this::onExpensesChanged);
 
-        RecyclerView recyclerView = view.findViewById(R.id.expenses_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(_expenseAdapter);
+        binding.expensesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.expensesRecyclerView.setAdapter(_expenseAdapter);
 
-        ImageButton addButton = view.findViewById(R.id.add_expense_fab);
-        addButton.setOnClickListener(this::onClickAddExpenseButton);
-        DragManipulator.manipulate(addButton, 64, getResources().getDimension(R.dimen.fab_margin));
+        binding.addExpenseFab.setOnClickListener(this::onClickAddExpenseButton);
+        DragManipulator.manipulate(binding.addExpenseFab, 64, getResources().getDimension(R.dimen.fab_margin));
 
         return view;
     }
@@ -96,34 +92,6 @@ public class ExpenseListFragment extends Fragment {
         }
     }
 
-    private void onFilterActivityResult(@NonNull ActivityResult result) {
-        int resultCode = result.getResultCode();
-
-        switch (resultCode) {
-            case Activity.RESULT_OK:
-                Intent intent = result.getData();
-                long fromEpochDay = intent.getLongExtra(getString(R.string.EXTRA_FILTER_FROM_DATE), LocalDate.MIN.toEpochDay());
-                LocalDate from = LocalDate.ofEpochDay(fromEpochDay);
-
-                long toEpochDay = intent.getLongExtra(getString(R.string.EXTRA_FILTER_TO_DATE), LocalDate.MAX.toEpochDay());
-                LocalDate to = LocalDate.ofEpochDay(toEpochDay);
-
-                String[] categories = intent.getStringArrayExtra(getString(R.string.EXTRA_FILTER_CATEGORIES));
-
-                expenseListViewModel.setFilters(from, to, categories);
-                break;
-            case Activity.RESULT_CANCELED:
-            default:
-                break;
-        }
-    }
-
-    private void onClickFilterButton(View view) {
-        Intent intent = new Intent(getContext(), FilterActivity.class);
-        // todo
-        filterActivityResultLauncher.launch(intent);
-    }
-
     private void onClickAddExpenseButton(View view) {
         Intent intent = new Intent(getContext(), ExpenseActivity.class);
         intent.putExtra(ExpenseActivity.EDIT, ExpenseActivity.EDIT_OPTION_NEW);
@@ -138,9 +106,6 @@ public class ExpenseListFragment extends Fragment {
     }
 
     private void onExpensesChanged(List<Expense> expenses) {
-        expenses.sort(Comparator.comparing(Expense::getDate)
-                .reversed()
-                .thenComparing((a, b) -> a.getName().compareToIgnoreCase(b.getName())));
         _expenseAdapter.submitList(expenses);
     }
 }
