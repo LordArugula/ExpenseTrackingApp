@@ -36,9 +36,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class MainActivity extends AppCompatActivity {
     private ExpenseListViewModel expenseListViewModel;
 
-    @Inject
-    public Map<String, ExpenseComparator> expenseComparators;
-
     private static void onConfigureTab(TabLayout.Tab tab, int position) {
         switch (position) {
             case 0:
