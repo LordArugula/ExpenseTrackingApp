@@ -59,4 +59,6 @@
     <string name="sort_category_descending">Category descending</string>
     <string name="EXTRA_SORT">EXTRA_SORT</string>
     <string name="action_close">Close</string>
+    <string name="total">Total:</string>
+    <string name="average">Average:</string>
 </resources>

@@ -10,9 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.androidplot.pie.PieChart;
 import com.androidplot.pie.Segment;
 import com.androidplot.pie.SegmentFormatter;
+import com.example.expense_tracking_app.databinding.FragmentSummaryBinding;
 import com.example.expense_tracking_app.models.Expense;
 import com.example.expense_tracking_app.viewmodels.ExpenseListViewModel;
 
@@ -30,7 +30,8 @@ public class SummaryFragment extends Fragment {
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault());
 
     private ExpenseListViewModel expenseListViewModel;
-    private PieChart pieChart;
+
+    private FragmentSummaryBinding binding;
 
     public SummaryFragment() {
         // Required empty public constructor
@@ -40,6 +41,7 @@ public class SummaryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_summary, container, false);
+        binding = FragmentSummaryBinding.bind(view);
 
         expenseListViewModel = new ViewModelProvider(getActivity())
                 .get(ExpenseListViewModel.class);
@@ -47,18 +49,25 @@ public class SummaryFragment extends Fragment {
         expenseListViewModel.getExpenses()
                 .observe(getViewLifecycleOwner(), this::onExpensesChanged);
 
-        pieChart = view.findViewById(R.id.pie_chart);
-        pieChart.getBackgroundPaint().setColor(Color.TRANSPARENT);
+        binding.pieChart.getBackgroundPaint().setColor(Color.TRANSPARENT);
 
         return view;
     }
 
     private void onExpensesChanged(List<Expense> expenses) {
         drawPieChart(expenses);
+        double total = expenses.stream()
+                .mapToDouble(Expense::getCost)
+                .sum();
+
+        double average = expenses.size() > 0 ? total / expenses.size() : 0;
+
+        binding.totalText.setText(currencyFormat.format(total));
+        binding.averageText.setText(currencyFormat.format(average));
     }
 
     private void drawPieChart(List<Expense> expenses) {
-        pieChart.getRegistry().clear();
+        binding.pieChart.getRegistry().clear();
         Map<String, Double> categoryCostMap = createCategoryCostMap(expenses);
         createPieChartSections(categoryCostMap);
     }
@@ -91,10 +100,10 @@ public class SummaryFragment extends Fragment {
             float[] hsv = new float[]{step * i, 0.8f, 0.9f};
             int color = Color.HSVToColor(hsv);
             SegmentFormatter segmentFormatter = new SegmentFormatter(color, color);
-            pieChart.addSegment(segment, segmentFormatter);
+            binding.pieChart.addSegment(segment, segmentFormatter);
             i++;
         }
 
-        pieChart.redraw();
+        binding.pieChart.redraw();
     }
 }
