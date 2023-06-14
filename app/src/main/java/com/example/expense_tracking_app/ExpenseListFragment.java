@@ -63,7 +63,8 @@ public class ExpenseListFragment extends Fragment {
         binding.expensesRecyclerView.setAdapter(_expenseAdapter);
 
         binding.addExpenseFab.setOnClickListener(this::onClickAddExpenseButton);
-        DragManipulator.manipulate(binding.addExpenseFab, 64, getResources().getDimension(R.dimen.fab_margin));
+        float thresholdRadius = getResources().getDimension(R.dimen.drag_threshold);
+        DragManipulator.manipulate(binding.addExpenseFab, thresholdRadius, getResources().getDimension(R.dimen.margin_large));
 
         return view;
     }
