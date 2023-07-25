@@ -1,13 +1,14 @@
 package com.example.expense_tracking_app.models;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 import java.time.LocalDate;
 
-public class Expense implements Parcelable, Comparable<Expense> {
+@Entity(tableName = "expenses_table")
+public class Expense {
+    @PrimaryKey(autoGenerate = true)
     private int id;
     private String name;
     private LocalDate date;
@@ -16,23 +17,23 @@ public class Expense implements Parcelable, Comparable<Expense> {
     private String notes;
     private String category;
 
-    public Expense(String name, LocalDate date, double cost, String category, String reason, String notes) {
+    public Expense(int id) {
+        this.id = id;
+    }
+
+    @Ignore
+    public Expense(int id, String name, LocalDate date, double cost, String reason, String notes, String category) {
+        this.id = id;
         this.name = name;
         this.date = date;
         this.cost = cost;
-        this.category = category;
         this.reason = reason;
         this.notes = notes;
+        this.category = category;
     }
 
-    protected Expense(@NonNull Parcel in) {
-        this.id = in.readInt();
-        this.name = in.readString();
-        this.date = LocalDate.ofEpochDay(in.readLong());
-        this.cost = in.readDouble();
-        this.reason = in.readString();
-        this.notes = in.readString();
-        this.category = in.readString();
+    public int getId() {
+        return id;
     }
 
     public String getName() {
@@ -82,51 +83,4 @@ public class Expense implements Parcelable, Comparable<Expense> {
     public void setCategory(String category) {
         this.category = category;
     }
-
-    @Override
-    public int compareTo(@NonNull Expense expense) {
-        int comparison = date.compareTo(expense.getDate());
-        if (comparison == 0) {
-            return name.compareToIgnoreCase(expense.getName());
-        }
-        return comparison;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull Parcel parcel, int i) {
-        parcel.writeInt(id);
-        parcel.writeString(name);
-        parcel.writeLong(date.toEpochDay());
-        parcel.writeDouble(cost);
-        parcel.writeString(reason);
-        parcel.writeString(notes);
-        parcel.writeString(category);
-    }
-
-    public static final Creator<Expense> CREATOR = new Creator<Expense>() {
-        @NonNull
-        @Override
-        public Expense createFromParcel(Parcel in) {
-            return new Expense(in);
-        }
-
-        @NonNull
-        @Override
-        public Expense[] newArray(int size) {
-            return new Expense[size];
-        }
-    };
 }

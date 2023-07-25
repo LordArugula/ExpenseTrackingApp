@@ -20,22 +20,25 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.expense_tracking_app.databinding.FilterSideSheetBinding;
-import com.example.expense_tracking_app.filters.CategoryFilter;
-import com.example.expense_tracking_app.filters.DateFilter;
-import com.example.expense_tracking_app.viewmodels.ExpenseListViewModel;
+import com.example.expense_tracking_app.filters.ExpenseQueryState;
+import com.example.expense_tracking_app.viewmodels.ExpenseViewModel;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.sidesheet.SideSheetDialog;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 public class FilterSideSheetDialogFragment extends DialogFragment {
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
 
-    private ExpenseListViewModel expenseListViewModel;
+    private ExpenseViewModel expenseViewModel;
 
     private FilterSideSheetBinding binding;
     private LocalDate fromDate;
@@ -53,31 +56,56 @@ public class FilterSideSheetDialogFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         binding = FilterSideSheetBinding.bind(view);
 
-        expenseListViewModel = new ViewModelProvider(getActivity())
-                .get(ExpenseListViewModel.class);
+        expenseViewModel = new ViewModelProvider(getActivity())
+                .get(ExpenseViewModel.class);
 
         Toolbar toolbar = binding.toolbar;
         toolbar.setTitle(R.string.filter_title);
         toolbar.inflateMenu(R.menu.side_sheet_menu);
         toolbar.setOnMenuItemClickListener(this::onMenuItemClicked);
 
-        DateFilter dateFilter = expenseListViewModel.getDateFilter().getValue();
-        fromDate = dateFilter.getStart();
-        toDate = dateFilter.getEnd();
+        selectedCategories = new TreeSet<>();
+
+        ExpenseQueryState queryState = expenseViewModel.getQueryState().getValue();
+
+        fromDate = queryState.getFromDateFilter();
+        toDate = queryState.getToDateFilter();
 
         bindDateField(binding.fromDate, fromDate, this::onSetFromDate);
         bindDateField(binding.toDate, toDate, this::onSetToDate);
 
-        String[] allCategories = expenseListViewModel.getCategories();
-        binding.categories.setSimpleItems(allCategories);
-        binding.categories.setOnItemClickListener(this::onCategorySelected);
+        for (String category : queryState.getCategoryFilters()) {
+            if (!selectedCategories.add(category)) {
+                continue;
+            }
 
-        CategoryFilter categoryFilter = expenseListViewModel.getCategoryFilter().getValue();
-        String[] categories = categoryFilter.getCategories();
-        selectedCategories = new TreeSet<>();
-        for (String category : categories) {
-            selectCategory(category);
+            Chip chip = createCategoryChip(category);
+            binding.categoryChipGroup.addView(chip);
         }
+
+        expenseViewModel.getCategories().observe(getActivity(), categories -> {
+            Set<String> defaultCategories = new TreeSet<>(Arrays.asList(getResources().getStringArray(R.array.expense_categories)));
+
+            List<String> customCategories = new TreeSet<>(categories).stream()
+                    .filter(category -> !defaultCategories.contains(category))
+                    .collect(Collectors.toList());
+
+            List<String> allCategories = new ArrayList<>(defaultCategories);
+            allCategories.addAll(customCategories);
+
+            binding.categories.setSimpleItems(allCategories.toArray(new String[]{}));
+        });
+        binding.categories.setOnItemClickListener(this::onCategorySelected);
+    }
+
+    @NonNull
+    private Chip createCategoryChip(String category) {
+        Chip chip = new Chip(getContext());
+        chip.setText(category);
+        chip.setCloseIconVisible(true);
+
+        chip.setOnCloseIconClickListener(this::onRemoveCategory);
+        return chip;
     }
 
     private boolean onMenuItemClicked(MenuItem menuItem) {
@@ -138,7 +166,10 @@ public class FilterSideSheetDialogFragment extends DialogFragment {
             binding.toDate.setError(null);
             binding.fromDate.clearFocus();
 
-            expenseListViewModel.setDateFilter(fromDate, toDate);
+            ExpenseQueryState expenseQueryState = expenseViewModel.getQueryState().getValue();
+            expenseQueryState.setFromDateFilter(fromDate);
+            expenseQueryState.setToDateFilter(toDate);
+            expenseViewModel.setQueryState(expenseQueryState);
         }
     }
 
@@ -164,7 +195,10 @@ public class FilterSideSheetDialogFragment extends DialogFragment {
             binding.toDate.setError(null);
             binding.toDate.clearFocus();
 
-            expenseListViewModel.setDateFilter(fromDate, toDate);
+            ExpenseQueryState expenseQueryState = expenseViewModel.getQueryState().getValue();
+            expenseQueryState.setFromDateFilter(fromDate);
+            expenseQueryState.setToDateFilter(toDate);
+            expenseViewModel.setQueryState(expenseQueryState);
         }
     }
 
@@ -180,27 +214,25 @@ public class FilterSideSheetDialogFragment extends DialogFragment {
         String category = (String) adapterView.getItemAtPosition(position);
         binding.categories.setText("");
 
-        selectCategory(category);
-    }
-
-    private void selectCategory(String category) {
         if (!selectedCategories.add(category)) {
             return;
         }
 
-        Chip chip = new Chip(getContext());
-        chip.setText(category);
-        chip.setCloseIconVisible(true);
-
-        chip.setOnCloseIconClickListener(this::onRemoveCategory);
+        Chip chip = createCategoryChip(category);
         binding.categoryChipGroup.addView(chip);
-        expenseListViewModel.setCategoryFilter(selectedCategories);
+
+        ExpenseQueryState queryState = expenseViewModel.getQueryState().getValue();
+        queryState.setCategoryFilters(selectedCategories);
+        expenseViewModel.setQueryState(queryState);
     }
 
     private void onRemoveCategory(View view) {
         binding.categoryChipGroup.removeView(view);
         Chip chipView = (Chip) view;
         selectedCategories.remove(chipView.getText().toString());
-        expenseListViewModel.setCategoryFilter(selectedCategories);
+
+        ExpenseQueryState expenseQueryState = expenseViewModel.getQueryState().getValue();
+        expenseQueryState.setCategoryFilters(selectedCategories);
+        expenseViewModel.setQueryState(expenseQueryState);
     }
 }

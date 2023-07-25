@@ -14,7 +14,7 @@ import com.androidplot.pie.Segment;
 import com.androidplot.pie.SegmentFormatter;
 import com.example.expense_tracking_app.databinding.FragmentSummaryBinding;
 import com.example.expense_tracking_app.models.Expense;
-import com.example.expense_tracking_app.viewmodels.ExpenseListViewModel;
+import com.example.expense_tracking_app.viewmodels.ExpenseViewModel;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -29,7 +29,7 @@ public class SummaryFragment extends Fragment {
 
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault());
 
-    private ExpenseListViewModel expenseListViewModel;
+    private ExpenseViewModel expenseViewModel;
 
     private FragmentSummaryBinding binding;
 
@@ -43,10 +43,10 @@ public class SummaryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_summary, container, false);
         binding = FragmentSummaryBinding.bind(view);
 
-        expenseListViewModel = new ViewModelProvider(getActivity())
-                .get(ExpenseListViewModel.class);
+        expenseViewModel = new ViewModelProvider(getActivity())
+                .get(ExpenseViewModel.class);
 
-        expenseListViewModel.getExpenses()
+        expenseViewModel.getAllExpenses()
                 .observe(getViewLifecycleOwner(), this::onExpensesChanged);
 
         binding.pieChart.getBackgroundPaint().setColor(Color.TRANSPARENT);

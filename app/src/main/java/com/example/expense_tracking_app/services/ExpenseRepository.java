@@ -1,26 +1,23 @@
 package com.example.expense_tracking_app.services;
 
+import androidx.lifecycle.LiveData;
+
 import com.example.expense_tracking_app.models.Expense;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ExpenseRepository {
-    List<Expense> getAll();
+    LiveData<Expense> getById(int id);
 
-    Optional<Expense> getById(int id);
+    LiveData<List<Expense>> getAll();
 
-    void add(Expense expense);
+    void insert(Expense expense);
 
-    void addRange(List<Expense> expenses);
+    void update(Expense expense);
 
-    Optional<Expense> update(int id, Expense expense);
+    void deleteById(int id);
 
-    Optional<Expense> remove(int id);
+    void deleteAll();
 
-    void clear();
-
-    boolean contains(int id);
-
-    String[] getCategories();
+    LiveData<List<String>> getCategories();
 }

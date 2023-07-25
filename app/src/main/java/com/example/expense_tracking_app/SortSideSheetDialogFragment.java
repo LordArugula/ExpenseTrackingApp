@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
@@ -16,24 +15,17 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.expense_tracking_app.databinding.SortSideSheetBinding;
-import com.example.expense_tracking_app.sorters.ExpenseComparator;
-import com.example.expense_tracking_app.viewmodels.ExpenseListViewModel;
-import com.google.android.material.radiobutton.MaterialRadioButton;
+import com.example.expense_tracking_app.filters.ExpenseQueryState;
+import com.example.expense_tracking_app.filters.SortBy;
+import com.example.expense_tracking_app.viewmodels.ExpenseViewModel;
 import com.google.android.material.sidesheet.SideSheetDialog;
-
-import java.util.Map;
-
-import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class SortSideSheetDialogFragment extends DialogFragment {
 
-    @Inject
-    public Map<String, ExpenseComparator> expenseComparators;
-
-    private ExpenseListViewModel expenseListViewModel;
+    private ExpenseViewModel expenseListViewModel;
 
     private SortSideSheetBinding binding;
 
@@ -49,46 +41,50 @@ public class SortSideSheetDialogFragment extends DialogFragment {
         binding = SortSideSheetBinding.bind(view);
 
         expenseListViewModel = new ViewModelProvider(getActivity())
-                .get(ExpenseListViewModel.class);
+                .get(ExpenseViewModel.class);
 
         Toolbar toolbar = binding.toolbar;
-        toolbar.setTitle(R.string.sort_title);
         toolbar.inflateMenu(R.menu.side_sheet_menu);
         toolbar.setOnMenuItemClickListener(this::onMenuItemClicked);
 
-        buildRadioGroup();
-    }
-
-    private void buildRadioGroup() {
-        RadioGroup radioGroup = binding.sortByRadioGroup;
-
-        ExpenseComparator currentComparator = expenseListViewModel.getComparator().getValue();
-        for (Map.Entry<String, ExpenseComparator> entry : expenseComparators.entrySet()) {
-            String name = entry.getKey();
-            ExpenseComparator comparator = entry.getValue();
-
-            RadioButton radioButton = new MaterialRadioButton(getContext());
-            radioButton.setText(name);
-            radioGroup.addView(radioButton);
-
-            if (currentComparator.getClass() == comparator.getClass()
-                    && currentComparator.getOrder() == comparator.getOrder()) {
-                radioGroup.check(radioButton.getId());
+        expenseListViewModel.getQueryState().observe(getActivity(), queryState -> {
+            switch (queryState.getSortBy()) {
+                case Date:
+                    binding.sortByRadioGroup.check(R.id.sort_date);
+                    break;
+                case Name:
+                    binding.sortByRadioGroup.check(R.id.sort_name);
+                    break;
+                case Cost:
+                    binding.sortByRadioGroup.check(R.id.sort_cost);
+                    break;
+                case Category:
+                    binding.sortByRadioGroup.check(R.id.sort_category);
+                    break;
             }
+
+            expenseListViewModel.getQueryState().removeObservers(getActivity());
+        });
+        binding.sortByRadioGroup.setOnCheckedChangeListener(this::onSortOptionChanged);
+    }
+
+    private void onSortOptionChanged(RadioGroup radioGroup, int id) {
+        ExpenseQueryState queryState = expenseListViewModel.getQueryState().getValue();
+        switch (id) {
+            case R.id.sort_category:
+                queryState.setSortBy(SortBy.Category);
+                break;
+            case R.id.sort_cost:
+                queryState.setSortBy(SortBy.Cost);
+                break;
+            case R.id.sort_date:
+                queryState.setSortBy(SortBy.Date);
+                break;
+            case R.id.sort_name:
+                queryState.setSortBy(SortBy.Name);
+                break;
         }
-
-        radioGroup.setOnCheckedChangeListener(this::onSortButtonChecked);
-    }
-
-    private void onSortButtonChecked(RadioGroup radioGroup, int id) {
-        RadioButton radioButton = radioGroup.findViewById(id);
-        String name = radioButton.getText().toString();
-        onSelectComparator(name);
-    }
-
-    private void onSelectComparator(String key) {
-        ExpenseComparator comparator = expenseComparators.get(key);
-        expenseListViewModel.setComparator(comparator);
+        expenseListViewModel.setQueryState(queryState);
     }
 
     private boolean onMenuItemClicked(MenuItem menuItem) {

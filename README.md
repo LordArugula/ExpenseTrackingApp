@@ -1,35 +1,8 @@
 # CS453-ExpenseTrackingApp
 
-# CS 453 Assignment 4 - Saving Data with Shared Preferences
+This was a project for the CS453 Mobile Programming course at CSUEB. The goal of the project was to create an Android application and learn how to launch activities and use intents and store data using SharedPreferences.
 
-For part one of Assignment 4, see: https://github.com/LordArugula/SharedPreferences
-
-## Part Two
-
-### Requirements
-
-Add Shared Preferences to your assignment two, Expense Tracking App. 
-
-### Submission
-
-The Expense Tracking app now saves expenses to the shared prefs. 
-
-<img src="https://user-images.githubusercontent.com/41593388/229270129-025443ef-33ac-4f1c-b0c9-30ad1082487b.png" width="320" />
-
-# CS 453 Assignment 3 - Activity Lifecycle and States
-
-## Part Two 
-
-For part one of Assignment 3, see: https://github.com/LordArugula/CS453-Two-Activities/tree/lifecycle and https://github.com/LordArugula/Implicit-Intents
-
-Requirements:
-
-> Design the user interface for an app of your choice that uses an Adapter and a RecyclerView, ListView, GridView or another View component of your choice. Some app ideas might be a simple restaurant ordering app. You may use the same app from assignment 2 if you wish and just add an Adapter for a View Component. You can design the features, UI and controls in your own creative way. It can be simple or complex depending on your design. You might think of creating a better Uber Eats, Grubhub, or Doordash app.
-
-This app already used the RecyclerView and RecyclerView.Adapter to display expense entries, so no changes were required.
-See [ExpenseAdapter.java](app/src/main/java/com/example/expense_tracking_app/ExpenseAdapter.java)
-
-# CS 453 Assignment 2 - Activities and Intents
+This project was refactored to use OOP best practices and follow SOLID principles to improve testability and extensibility. The project now uses the Hilt library for dependency injection and the Room library for a local SQLite database instead of SharedPreferences. 
 
 ## Requirements
 
@@ -59,8 +32,7 @@ There should also be a way to enter a new expense category.
 Your app design needs to contain at least two different screens. More screens will probably
 be needed to space out the features appropriately.
 
-There is no need to save and retrieve data in this app version. We will learn about data
-later in the class.
+Design the user interface that uses an Adapter and a RecyclerView, ListView, GridView or another View component of your choice. 
 
 ## Screenshots
 

@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.expense_tracking_app.adapters.ViewPagerFragmentAdapter;
-import com.example.expense_tracking_app.viewmodels.ExpenseListViewModel;
+import com.example.expense_tracking_app.viewmodels.ExpenseViewModel;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -19,8 +19,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
-    private ExpenseListViewModel expenseListViewModel;
-
     private static void onConfigureTab(TabLayout.Tab tab, int position) {
         switch (position) {
             case 0:
@@ -44,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
         new TabLayoutMediator(tabLayout, viewPager2, MainActivity::onConfigureTab)
                 .attach();
 
-        expenseListViewModel = new ViewModelProvider(this)
-                .get(ExpenseListViewModel.class);
+        ExpenseViewModel expenseViewModel = new ViewModelProvider(this)
+                .get(ExpenseViewModel.class);
     }
 
     @Override
