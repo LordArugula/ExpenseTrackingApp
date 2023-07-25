@@ -62,7 +62,7 @@ public class SharedPrefsExpenseRepository implements ExpenseRepository {
             int id = expenses.stream().max(Comparator.comparingInt(Expense::getId))
                     .map(x -> x.getId() + 1)
                     .orElse(1);
-            Expense insert = new Expense(id, expense.getName(), expense.getDate(), expense.getCost(), expense.getCategory(), expense.getReason(), expense.getNotes());
+            Expense insert = new Expense(id, expense.getName(), expense.getDate(), expense.getCost(), expense.getReason(), expense.getNotes(), expense.getCategory());
             expenses.add(insert);
         } else {
             expenses.add(expense);
