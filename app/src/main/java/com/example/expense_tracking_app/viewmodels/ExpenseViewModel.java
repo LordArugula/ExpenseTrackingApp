@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel;
 import com.example.expense_tracking_app.filters.ExpenseQueryState;
 import com.example.expense_tracking_app.models.Expense;
 import com.example.expense_tracking_app.services.ExpenseRepository;
-import com.example.expense_tracking_app.services.RoomExpenseRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,10 +53,6 @@ public class ExpenseViewModel extends ViewModel {
 
     public void deleteAll(Expense expense) {
         expenseRepository.deleteAll();
-    }
-
-    public void filter(ExpenseQueryState filterState) {
-        this.queryState.postValue(filterState);
     }
 
     public LiveData<ExpenseQueryState> getQueryState() {

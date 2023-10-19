@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -83,19 +84,14 @@ public class FilterSideSheetDialogFragment extends DialogFragment {
             binding.categoryChipGroup.addView(chip);
         }
 
-        expenseViewModel.getCategories().observe(getActivity(), categories -> {
-            Set<String> defaultCategories = new TreeSet<>(Arrays.asList(getResources().getStringArray(R.array.expense_categories)));
-
-            List<String> customCategories = new TreeSet<>(categories).stream()
-                    .filter(category -> !defaultCategories.contains(category))
-                    .collect(Collectors.toList());
-
-            List<String> allCategories = new ArrayList<>(defaultCategories);
-            allCategories.addAll(customCategories);
-
-            binding.categories.setSimpleItems(allCategories.toArray(new String[]{}));
-        });
+        expenseViewModel.getCategories().observe(getActivity(), this::onCategoriesChanged);
         binding.categories.setOnItemClickListener(this::onCategorySelected);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        expenseViewModel.getCategories().removeObserver(this::onCategoriesChanged);
     }
 
     @NonNull
@@ -234,5 +230,18 @@ public class FilterSideSheetDialogFragment extends DialogFragment {
         ExpenseQueryState expenseQueryState = expenseViewModel.getQueryState().getValue();
         expenseQueryState.setCategoryFilters(selectedCategories);
         expenseViewModel.setQueryState(expenseQueryState);
+    }
+
+    private void onCategoriesChanged(List<String> categories) {
+        Set<String> defaultCategories = new TreeSet<>(Arrays.asList(getResources().getStringArray(R.array.expense_categories)));
+
+        List<String> customCategories = new TreeSet<>(categories).stream()
+                .filter(category -> !defaultCategories.contains(category))
+                .collect(Collectors.toList());
+
+        List<String> allCategories = new ArrayList<>(defaultCategories);
+        allCategories.addAll(customCategories);
+
+        binding.categories.setSimpleItems(allCategories.toArray(new String[]{}));
     }
 }
