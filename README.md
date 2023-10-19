@@ -1,35 +1,8 @@
 # CS453-ExpenseTrackingApp
 
-# CS 453 Assignment 4 - Saving Data with Shared Preferences
+This was originally a project for the CS453 Mobile Programming course at CSUEB. The goal of the project was to create an Android application and learn how to launch activities and use intents and store data using SharedPreferences.
 
-For part one of Assignment 4, see: https://github.com/LordArugula/SharedPreferences
-
-## Part Two
-
-### Requirements
-
-Add Shared Preferences to your assignment two, Expense Tracking App. 
-
-### Submission
-
-The Expense Tracking app now saves expenses to the shared prefs. 
-
-<img src="https://user-images.githubusercontent.com/41593388/229270129-025443ef-33ac-4f1c-b0c9-30ad1082487b.png" width="320" />
-
-# CS 453 Assignment 3 - Activity Lifecycle and States
-
-## Part Two 
-
-For part one of Assignment 3, see: https://github.com/LordArugula/CS453-Two-Activities/tree/lifecycle and https://github.com/LordArugula/Implicit-Intents
-
-Requirements:
-
-> Design the user interface for an app of your choice that uses an Adapter and a RecyclerView, ListView, GridView or another View component of your choice. Some app ideas might be a simple restaurant ordering app. You may use the same app from assignment 2 if you wish and just add an Adapter for a View Component. You can design the features, UI and controls in your own creative way. It can be simple or complex depending on your design. You might think of creating a better Uber Eats, Grubhub, or Doordash app.
-
-This app already used the RecyclerView and RecyclerView.Adapter to display expense entries, so no changes were required.
-See [ExpenseAdapter.java](app/src/main/java/com/example/expense_tracking_app/ExpenseAdapter.java)
-
-# CS 453 Assignment 2 - Activities and Intents
+This project was refactored to use the Hilt library for dependency injection and the Room library for a local SQLite database instead of SharedPreferences. This update also added some simple data visualization.
 
 ## Requirements
 
@@ -59,44 +32,47 @@ There should also be a way to enter a new expense category.
 Your app design needs to contain at least two different screens. More screens will probably
 be needed to space out the features appropriately.
 
-There is no need to save and retrieve data in this app version. We will learn about data
-later in the class.
+Design the user interface that uses an Adapter and a RecyclerView, ListView, GridView or another View component of your choice. 
 
 ## Screenshots
 
 ### Main screen 
 
-Shows the app with several expenses added. Can see the total and average money spent.
+Shows the app with main screen with several expenses already added.
 
-<img src="https://user-images.githubusercontent.com/41593388/218352898-a6a2d926-2251-40c3-be40-154320c38be1.png" width="240" />
+<img src="https://github.com/LordArugula/ExpenseTrackingApp/assets/41593388/83aef897-d285-4989-bb45-01c8b1b95ad8" width="240" />
+
+### Summary screen
+
+Shows a pie chart of the expenses based on their categories and the total and average amount spent per expense.
+
+<img src="https://github.com/LordArugula/ExpenseTrackingApp/assets/41593388/8f1a865f-6313-47d0-b3bd-5109d122e612" width="240" />
+
+The chart with a date filter applied.
+
+<img src="https://github.com/LordArugula/ExpenseTrackingApp/assets/41593388/3904b0b1-6407-4c36-b2fe-1f8addb15c1b" width="240" />
 
 ### Filter screen
 
-Clicking on the filter button opens this menu where the user can apply filters on which expenses are displayed. The user can filter by a date range and/or by category.
+Clicking on the filter button opens a side menu where the user can apply filters on which expenses are displayed. The user can filter by a date range and/or by category.
 
-<img src="https://user-images.githubusercontent.com/41593388/218352915-a892e815-5a71-410a-a4a4-c2be29ab7100.png" width="240" />
+<img src="https://github.com/LordArugula/ExpenseTrackingApp/assets/41593388/aef9d146-c3ac-46df-92ed-7e0fde8e069e" width="240" />
 
-Choosing a date to filter by.
+### Sort screen
 
-<img src="https://user-images.githubusercontent.com/41593388/218353073-26776f3a-9763-4887-a342-68a3f2c1659a.png" width="240" />
+Clicking on the sort button opens a side menu where the user can change the sorting of the expenses.
 
-The main screen with only the expenses that match the filter.
-
-<img src="https://user-images.githubusercontent.com/41593388/218353141-1cfed06d-b061-41c1-a48c-026471dcda6a.png" width="240" />
+<img src="https://github.com/LordArugula/ExpenseTrackingApp/assets/41593388/1cca8695-4d0c-4145-aede-5244144752c9" width="240" />
 
 ### Expense details screen
 
 The user can press the add button at the bottom corner of the main screen to add a new expense entry.
 
-<img src="https://user-images.githubusercontent.com/41593388/218353307-818a0e84-1007-4b6c-ad83-aa2a15fb1571.png" width="240" />
-
-After adding the new entry
-
-<img src="https://user-images.githubusercontent.com/41593388/218353400-bcee747c-909d-47b6-8cbb-4c5664bbe99f.png" width="240" />
+<img src="https://github.com/LordArugula/ExpenseTrackingApp/assets/41593388/cbead208-7fd1-4f0d-a3f4-293d154cd278" width="240" />
 
 The user can also tap on an existing expense to view, edit, and delete an expense entry. 
 
-<img src="https://user-images.githubusercontent.com/41593388/218353580-a3a104e5-759c-401d-86b7-966da912c5d1.png" width="240" />
+<img src="https://github.com/LordArugula/ExpenseTrackingApp/assets/41593388/4c6e9dc1-6e25-4cbe-9ae7-fd892ea80aa9" width="240" />
 
 Using the predefined categories:
 

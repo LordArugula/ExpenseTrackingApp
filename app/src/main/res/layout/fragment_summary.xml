@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SummaryFragment">
+
+    <com.anychart.AnyChartView
+        android:id="@+id/pie_chart"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:contentDescription="@string/expenses_pie_chart_description" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/total_label"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:labelFor="@id/total_text"
+        android:minWidth="100dp"
+        android:text="@string/total" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/total_text"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/total_label" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/average_label"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/total_label"
+        android:labelFor="@id/total_text"
+        android:minWidth="100dp"
+        android:text="@string/average" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/average_text"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/total_text"
+        android:layout_toEndOf="@id/average_label" />
+
+</RelativeLayout>

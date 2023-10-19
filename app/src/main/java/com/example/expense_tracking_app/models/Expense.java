@@ -1,8 +1,15 @@
-package com.example.expense_tracking_app;
+package com.example.expense_tracking_app.models;
+
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 import java.time.LocalDate;
 
-public class Expense implements Comparable<Expense> {
+@Entity(tableName = "expenses_table")
+public class Expense {
+    @PrimaryKey(autoGenerate = true)
+    private int id;
     private String name;
     private LocalDate date;
     private double cost;
@@ -10,15 +17,23 @@ public class Expense implements Comparable<Expense> {
     private String notes;
     private String category;
 
-    public Expense(String name, LocalDate date, double cost) {
+    public Expense(int id) {
+        this.id = id;
+    }
+
+    @Ignore
+    public Expense(int id, String name, LocalDate date, double cost, String reason, String notes, String category) {
+        this.id = id;
         this.name = name;
         this.date = date;
         this.cost = cost;
+        this.reason = reason;
+        this.notes = notes;
+        this.category = category;
     }
 
-    public Expense(String name, LocalDate date, double cost, String category) {
-        this(name, date, cost);
-        this.category = category;
+    public int getId() {
+        return id;
     }
 
     public String getName() {
@@ -67,14 +82,5 @@ public class Expense implements Comparable<Expense> {
 
     public void setCategory(String category) {
         this.category = category;
-    }
-
-    @Override
-    public int compareTo(Expense expense) {
-        int comparison = date.compareTo(expense.getDate());
-        if (comparison == 0) {
-            return name.compareToIgnoreCase(expense.getName());
-        }
-        return comparison;
     }
 }
