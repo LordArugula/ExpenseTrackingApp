@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".SummaryFragment">
 
-    <com.androidplot.pie.PieChart
+    <com.anychart.AnyChartView
         android:id="@+id/pie_chart"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

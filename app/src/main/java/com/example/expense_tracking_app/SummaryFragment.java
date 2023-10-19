@@ -10,8 +10,19 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.androidplot.pie.Segment;
-import com.androidplot.pie.SegmentFormatter;
+//import com.androidplot.pie.Segment;
+//import com.androidplot.pie.SegmentFormatter;
+import com.anychart.APIlib;
+import com.anychart.AnyChart;
+import com.anychart.AnyChartView;
+import com.anychart.chart.common.dataentry.DataEntry;
+import com.anychart.chart.common.dataentry.ValueDataEntry;
+import com.anychart.charts.Pie;
+
+import com.anychart.enums.Align;
+import com.anychart.enums.LegendLayout;
+import com.anychart.enums.Orientation;
+import com.anychart.enums.Position;
 import com.example.expense_tracking_app.databinding.FragmentSummaryBinding;
 import com.example.expense_tracking_app.models.Expense;
 import com.example.expense_tracking_app.viewmodels.ExpenseViewModel;
@@ -21,6 +32,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -32,6 +45,7 @@ public class SummaryFragment extends Fragment {
     private ExpenseViewModel expenseViewModel;
 
     private FragmentSummaryBinding binding;
+    private Pie pieChart;
 
     public SummaryFragment() {
         // Required empty public constructor
@@ -49,7 +63,13 @@ public class SummaryFragment extends Fragment {
         expenseViewModel.getAllExpenses()
                 .observe(getViewLifecycleOwner(), this::onExpensesChanged);
 
-        binding.pieChart.getBackgroundPaint().setColor(Color.TRANSPARENT);
+        pieChart = AnyChart.pie();
+        pieChart.legend()
+                .position(Orientation.BOTTOM)
+                .itemsLayout(LegendLayout.HORIZONTAL_EXPANDABLE)
+                .align(Align.RIGHT);
+
+        binding.pieChart.setChart(pieChart);
 
         return view;
     }
@@ -67,43 +87,13 @@ public class SummaryFragment extends Fragment {
     }
 
     private void drawPieChart(List<Expense> expenses) {
-        binding.pieChart.getRegistry().clear();
-        Map<String, Double> categoryCostMap = createCategoryCostMap(expenses);
-        createPieChartSections(categoryCostMap);
-    }
+        List<DataEntry> pieChartData = expenses.stream()
+                .collect(Collectors.groupingBy(Expense::getCategory, Collectors.summingDouble(Expense::getCost)))
+                .entrySet()
+                .stream().map(entry -> new ValueDataEntry(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
 
-    @NonNull
-    private static Map<String, Double> createCategoryCostMap(List<Expense> expenses) {
-        Map<String, Double> categoryCostMap = new TreeMap<>();
-
-        for (Expense expense : expenses) {
-            if (categoryCostMap.containsKey(expense.getCategory())) {
-                Double cost = categoryCostMap.get(expense.getCategory());
-                categoryCostMap.put(expense.getCategory(), cost + expense.getCost());
-            } else {
-                categoryCostMap.put(expense.getCategory(), expense.getCost());
-            }
-        }
-
-        return categoryCostMap;
-    }
-
-    private void createPieChartSections(Map<String, Double> categoryCostMap) {
-        float step = 360f / categoryCostMap.size();
-        int i = 0;
-
-        for (Map.Entry<String, Double> entry : categoryCostMap.entrySet()) {
-            String category = entry.getKey();
-            Double cost = entry.getValue();
-            Segment segment = new Segment(String.format("%s\n%s", category, currencyFormat.format(cost)), cost);
-
-            float[] hsv = new float[]{step * i, 0.8f, 0.9f};
-            int color = Color.HSVToColor(hsv);
-            SegmentFormatter segmentFormatter = new SegmentFormatter(color, color);
-            binding.pieChart.addSegment(segment, segmentFormatter);
-            i++;
-        }
-
-        binding.pieChart.redraw();
+        APIlib.getInstance().setActiveAnyChartView(binding.pieChart);
+        pieChart.data(pieChartData);
     }
 }

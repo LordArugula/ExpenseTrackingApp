@@ -32,7 +32,7 @@ android {
 }
 dependencies {
     // Plot and chart library
-    implementation 'com.androidplot:androidplot-core:1.5.10'
+    implementation 'com.github.AnyChart:AnyChart-Android:1.1.5'
 
     // JSON library
     implementation 'com.google.code.gson:gson:2.10.1'
@@ -57,5 +57,6 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    testImplementation 'org.mockito:mockito-core:5.4.0'
 }
 
