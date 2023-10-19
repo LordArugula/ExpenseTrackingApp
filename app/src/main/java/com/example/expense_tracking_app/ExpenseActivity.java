@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
@@ -19,6 +20,7 @@ import com.example.expense_tracking_app.models.Expense;
 import com.example.expense_tracking_app.viewmodels.ExpenseViewModel;
 
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -81,13 +83,11 @@ public class ExpenseActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                cancelChanges();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            cancelChanges();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private void populateFormWithDefaultValues() {
@@ -106,6 +106,10 @@ public class ExpenseActivity extends AppCompatActivity {
     }
 
     private void populateFormFromExpense(Expense expense) {
+        if (expense == null) {
+            populateFormWithDefaultValues();
+            return;
+        }
         _binding.name.setText(expense.getName());
 
         _binding.date.setText(dateFormat.format(expense.getDate()));
@@ -188,7 +192,12 @@ public class ExpenseActivity extends AppCompatActivity {
 
         double cost = 0;
         if (!TextUtils.isEmpty(_binding.cost.getText())) {
-            cost = Double.parseDouble(_binding.cost.getText().toString());
+            try {
+                Number parse = NumberFormat.getNumberInstance().parse(_binding.cost.getText().toString());
+                cost = parse.doubleValue();
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         String reason = _binding.reason.getText().toString();

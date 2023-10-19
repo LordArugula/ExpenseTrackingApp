@@ -1,28 +1,21 @@
 package com.example.expense_tracking_app;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-//import com.androidplot.pie.Segment;
-//import com.androidplot.pie.SegmentFormatter;
 import com.anychart.APIlib;
 import com.anychart.AnyChart;
-import com.anychart.AnyChartView;
 import com.anychart.chart.common.dataentry.DataEntry;
 import com.anychart.chart.common.dataentry.ValueDataEntry;
 import com.anychart.charts.Pie;
-
 import com.anychart.enums.Align;
 import com.anychart.enums.LegendLayout;
 import com.anychart.enums.Orientation;
-import com.anychart.enums.Position;
 import com.example.expense_tracking_app.databinding.FragmentSummaryBinding;
 import com.example.expense_tracking_app.models.Expense;
 import com.example.expense_tracking_app.viewmodels.ExpenseViewModel;
@@ -30,9 +23,6 @@ import com.example.expense_tracking_app.viewmodels.ExpenseViewModel;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -41,8 +31,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class SummaryFragment extends Fragment {
 
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault());
-
-    private ExpenseViewModel expenseViewModel;
 
     private FragmentSummaryBinding binding;
     private Pie pieChart;
@@ -57,7 +45,7 @@ public class SummaryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_summary, container, false);
         binding = FragmentSummaryBinding.bind(view);
 
-        expenseViewModel = new ViewModelProvider(getActivity())
+        ExpenseViewModel expenseViewModel = new ViewModelProvider(getActivity())
                 .get(ExpenseViewModel.class);
 
         expenseViewModel.getAllExpenses()

@@ -23,11 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class ExpenseListFragment extends Fragment {
 
-    private ExpenseViewModel expenseViewModel;
-
     private ExpenseAdapter _expenseAdapter;
-
-    private FragmentExpenseListBinding binding;
 
     public ExpenseListFragment() {
         // Required empty public constructor
@@ -37,12 +33,12 @@ public class ExpenseListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_expense_list, container, false);
-        binding = FragmentExpenseListBinding.bind(view);
+        com.example.expense_tracking_app.databinding.FragmentExpenseListBinding binding = FragmentExpenseListBinding.bind(view);
 
         // Set the adapter
         _expenseAdapter = new ExpenseAdapter(this::onClickExpenseItem);
 
-        expenseViewModel = new ViewModelProvider(getActivity())
+        ExpenseViewModel expenseViewModel = new ViewModelProvider(getActivity())
                 .get(ExpenseViewModel.class);
 
         expenseViewModel.getAllExpenses().observe(getViewLifecycleOwner(), expenses -> {

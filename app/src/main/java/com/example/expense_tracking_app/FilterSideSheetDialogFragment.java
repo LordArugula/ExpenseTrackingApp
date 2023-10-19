@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,6 +44,7 @@ public class FilterSideSheetDialogFragment extends DialogFragment {
     private LocalDate fromDate;
     private LocalDate toDate;
     private Set<String> selectedCategories;
+    private Set<String> defaultCategories;
 
     @Nullable
     @Override
@@ -56,6 +56,8 @@ public class FilterSideSheetDialogFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         binding = FilterSideSheetBinding.bind(view);
+
+        defaultCategories = new TreeSet<>(Arrays.asList(getResources().getStringArray(R.array.expense_categories)));
 
         expenseViewModel = new ViewModelProvider(getActivity())
                 .get(ExpenseViewModel.class);
@@ -88,12 +90,6 @@ public class FilterSideSheetDialogFragment extends DialogFragment {
         binding.categories.setOnItemClickListener(this::onCategorySelected);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        expenseViewModel.getCategories().removeObserver(this::onCategoriesChanged);
-    }
-
     @NonNull
     private Chip createCategoryChip(String category) {
         Chip chip = new Chip(getContext());
@@ -105,13 +101,11 @@ public class FilterSideSheetDialogFragment extends DialogFragment {
     }
 
     private boolean onMenuItemClicked(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.action_close:
-                dismiss();
-                return true;
-            default:
-                return false;
+        if (menuItem.getItemId() == R.id.action_close) {
+            dismiss();
+            return true;
         }
+        return false;
     }
 
     @NonNull
@@ -233,8 +227,6 @@ public class FilterSideSheetDialogFragment extends DialogFragment {
     }
 
     private void onCategoriesChanged(List<String> categories) {
-        Set<String> defaultCategories = new TreeSet<>(Arrays.asList(getResources().getStringArray(R.array.expense_categories)));
-
         List<String> customCategories = new TreeSet<>(categories).stream()
                 .filter(category -> !defaultCategories.contains(category))
                 .collect(Collectors.toList());
